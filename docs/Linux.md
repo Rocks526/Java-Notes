@@ -1,4 +1,3 @@
-# Linux基础
 
 [Linux介绍](https://github.com/Rocks526/Java-Notes/blob/master/docs/Linux介绍.md)
 

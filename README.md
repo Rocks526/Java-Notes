@@ -24,21 +24,9 @@
 
 [Java虚拟机]()
 
-## Linux
-
-[Linux介绍]()
-
-[Linux文件管理]()
-
-[Linux用户管理]()
-
-[Linux网络管理]()
-
-[Linux运维]()
-
-[Shell脚本]()
-
 ## Web
+
+[Linux](https://github.com/Rocks526/Java-Notes/blob/master/docs/Linux.md)
 
 [HTTP]()
 

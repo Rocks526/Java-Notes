@@ -1,3 +1,9 @@
+
+
+
+
+
+
 # Linux介绍
 
 # Linux文件管理
@@ -9,6 +15,378 @@
 # Linux状态监控
 
 # Shell脚本
+
+## Linux基础命令
+
+cut切割命令
+
+date日期命令
+
+grep -v grep过滤本身
+
+wc -l统计
+
+sh -x调试脚本
+
+read
+
+在脚本内部，$$获取运行当前脚本的进程id
+
+
+
+
+
+## 流程控制
+
+### if
+
+shell中的if和大多数编程语言不一样，示例如下：
+
+```shell
+if condition
+then
+    command1 
+    command2
+    ...
+    commandN
+else
+    command
+fi
+
+-----------------------------------------------------------------------------
+
+if condition1
+then
+    command1
+elif condition2 
+then 
+    command2
+else
+    commandN
+fi
+
+-------------------------------------------------------------------------------
+
+a=10
+b=20
+if [ $a == $b ]
+then
+   echo "a 等于 b"
+elif [ $a -gt $b ]
+then
+   echo "a 大于 b"
+elif [ $a -lt $b ]
+then
+   echo "a 小于 b"
+else
+   echo "没有符合的条件"
+fi
+```
+
+### for
+
+```shell
+for var in item1 item2 ... itemN
+do
+    command1
+    command2
+    ...
+    commandN
+done
+
+----------------------------------------------------------------
+
+for str in 'This is a string'
+do
+    echo $str
+done
+//会将字符串的空格识别为元素分隔符
+```
+
+### while
+
+```shell
+while condition
+do
+    command
+done
+
+----------------------------------------------------
+//无限循环
+while :
+do
+    command
+done
+```
+
+### case
+
+```shell
+echo '输入 1 到 4 之间的数字:'
+echo '你输入的数字为:'
+read aNum
+case $aNum in
+    1)  echo '你选择了 1'
+    ;;
+    2)  echo '你选择了 2'
+    ;;
+    3)  echo '你选择了 3'
+    ;;
+    4)  echo '你选择了 4'
+    ;;
+    *)  echo '你没有输入 1 到 4 之间的数字'
+    ;;
+esac
+```
+
+## 变量
+
+### 变量定义
+
+通过`变量名=值`的方式定义变量，与大多数语言不一样的是，变量名和等号之间不能有空格，其规则基本一致，可下划线开头，不可关键字。
+
+```shell
+name=lzx
+_age=22
+```
+
+### 变量调用
+
+通过`$变量名`的方式使用变量，也可以使用`${变量名}`，优点是容易区分变量范围
+
+```shell
+echo $name
+echo $_age
+```
+
+### 变量替换
+
+变量替换的意思是根据某种匹配规则对变量进行修改，常用的有如下规则：
+
+- ${变量名#匹配规则}：从变量开头进行规则匹配，将符合的最短的数据删除
+- ${变量名##匹配规则}：从变量开头进行规则匹配，将符合的最长的数据删除
+
+- ${变量名%匹配规则}：从变量尾部进行规则匹配，将符合的最短的数据删除
+
+- ${变量名%%匹配规则}：从变量尾部进行规则匹配，将符合的最长的数据删除
+
+- ${变量名/旧字符串/新字符串}：用新字符串替换旧字符串，只替换第一个
+
+- ${变量名//旧字符串/新字符串}：用新字符串替换旧字符串，符合条件的全部替换
+
+```shell
+msg="This is a msg"
+var1=${msg#*is}
+echo $var1  -->  结果为is a msg
+var2=${msg%msg}
+echo $var2  -->  结果为This is a
+var3=${msg/is/xx}
+echo $var3  -->  结果为Thxx is a msg
+var4=${msg//is/xx}
+echo $var4  -->  结果为Thxx xx a msg
+```
+
+### 字符串变量
+
+- 计算字符串长度
+  - ${#变量名}
+  - expr length "$变量名"
+- 获取子串在字符串中的位置
+  - expr index $变量名 $子串
+- 计算子串的长度
+  - expr match $变量名 子串
+- 截取子串
+  - ${变量名：index}  从index位置开始截取
+  - ${变量名：index：length}  从index位置开始截取，截取长度为length
+  - ${变量名：-index}  从右边index位置开始截取
+  - expr substr $变量名 $index $length   从index开始截取长度为length子串
+
+```shell
+msg="This is a msg"
+len=${#msg}
+echo len   -->  14
+string="quickstart a app"    匹配时是一个一个字符匹配
+index=`expr index "$string" sta`
+echo index  -->  6
+```
+
+> expr命令的索引下标从1开始
+>
+> ${}索引下标从0开始
+
+### 数组变量
+
+- 数组定义
+
+  -  array=("joe" "mary" "jack")
+
+- 数组访问
+
+  - echo ${array[@]}  全部输出
+  - echo ${array[0]}  访问0号元素
+
+- 获取数组长度
+
+  - echo ${#array}   获取数组内元素个数
+  - echo ${#array[0]}   获取元素0的长度
+
+- 给某个下标赋值
+
+  - array[0]="lily"
+
+- 删除元素
+
+  - unset arr[0]  删除0号元素
+  - unset array   删除数组
+
+- 分片访问
+
+  - ${array[@]:1:4}  访问下标为1到4的元素
+
+- 内容替换
+
+  - ${array[@]/test/TEST}  将数组所有元素包含test的替换为TEST
+
+- 数组遍历
+
+  ```shell
+  for v in ${array[@]}
+  do
+  	echo $v
+  done
+  ```
+
+### 命令替换
+
+将某个命令的执行结果赋值给变量方式：
+
+- \`command\`
+- ${command}
+
+### 数学运算
+
+对变量进行加减乘除等数学运算方式：
+
+- $(($num1 operator $num2))
+- expr $num1 operator $num2
+
+```shell
+num=$((15 + 10))
+num2=$(($num / 5))
+```
+
+### 变量类型
+
+shell是一种弱类型语言，使用变量不需要声明类型，但shell变量其实是存在类型的，可以通过以下方式声明：
+
+- declare命令
+- typeset命令
+
+这两个命令是完全等价的，常用选项有：
+
+- -r：将变量设置为只读模式
+- -i：将变量设置为整数
+- -a：将变量设置为数组
+- -f：显示所有定义的函数和内容
+- -F：显示所有定义的函数，仅显示函数名
+- -x：将变量声明为环境变量，即在脚本内外都通用
+
+```shell
+typeset -r var1="hello"
+echo $var1  -->  hello
+var1="hello world"  -->  error,readonly variable
+```
+
+> 取消声明为typeset +r，其他选项同理
+
+## 函数
+
+Linux Shell中的函数和大多数编程语言中的函数一样，都是用于封装、复用代码。
+
+- 函数定义
+
+```shell
+//第一种
+name(){
+	.......
+}
+
+//第二种
+function name
+{
+	..........
+}
+```
+
+- 函数调用
+
+```shell
+function_name $1 $2.....$n
+```
+
+- 函数返回值
+
+```shell
+name()
+{
+	if $1 -eq 100
+		return 0
+	else
+		return 1
+	if
+}
+//使用return只能返回1-255的整数，一般用于判断函数执行状态，0表示成功，1表示失败
+
+name()
+{
+	if $1 -eq 100
+	then
+		echo "输入数字等于100"
+	else
+		echo "输入数字不等于100"
+	fi
+}
+//使用echo可以返回任何字符串，通常用于返回数据，比如一个字符串或者数组
+```
+
+- 局部变量
+
+shell中默认变量全部是全局变量，即函数内部定义的变量，函数执行完成后还可以访问。
+
+可以通过local关键字定义局部变量，shell中应慎用全局变量。
+
+- 函数库
+
+shell和其他语言一样，也可以将某些基本功能代码封装成函数库，供其他脚本调用。
+
+```shell
+//编辑一个base基础脚本  由于Linux识别文件不通过扩展名 因此扩展名无所谓，但一般为了便于识别，库函数使用lib
+vim base.lib
+//脚本里调用库函数 必须使用绝对路径
+. /root/shell/base.lib
+```
+
+## find
+
+find命令用于在磁盘上查找符合条件的文件。
+
+### 语法格式
+
+- find [path] [option] [operator] 
+
+### 常用选项(option)
+
+- -name：根据文件名查找
+- -perm：根据文件权限查找
+- -prune：排除某些不需要查找的目录
+- -user：根据文件属主查找
+- -group：根据文件属组查找
+- -mtime -n +n：根据文件修改时间查找
+- -nogroup：查找无效属组的文件
+- -nouser：查找无效属主的文件
+- -newer file1 ！ file2 ：查找更改时间比file1新但是比file2旧的文件
+- -type：按文件类型查找
+- -size -n +n：根据文件大小查找
 
 ## grep
 

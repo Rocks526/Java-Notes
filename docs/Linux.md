@@ -1,22 +1,35 @@
+- [Linux介绍](#Linux介绍)
 
+- [Linux文件管理](#Linux文件管理)
 
+- [Linux用户管理](#Linux用户管理)
 
+- [Linux网络管理](#Linux网络管理)
 
+- [Linux状态监控](#Linux状态监控)
 
+- [Shell脚本](#Shell脚本)
+  - [基础命令](#基础命令)
+  - [变量](#变量)
+  - [函数](#函数)
+  - [grep](#grep)
+  - [sed](#sed)
+  - [awk](#awk)
+  - [Shell脚本实战](#Shell脚本实战)
 
-# Linux介绍
+# <a id="Linux介绍">Linux介绍</a>
 
-# Linux文件管理
+# <a id="Linux文件管理">Linux文件管理</a>
 
-# Linux用户管理
+# <a id="Linux用户管理">Linux用户管理</a>
 
-# Linux网络管理
+# <a id="Linux网络管理">Linux管理</a>
 
-# Linux状态监控
+# <a id="Linux状态监控">Linux状态监控</a>
 
-# Shell脚本
+# <a id="Shell脚本">Shell脚本</a>
 
-## Linux基础命令
+## <a id="基础命令">Linux基础命令</a>
 
 cut切割命令
 
@@ -36,7 +49,7 @@ read
 
 
 
-## 流程控制
+## <a id="流程控制">流程控制</a>
 
 ### if
 
@@ -139,7 +152,7 @@ case $aNum in
 esac
 ```
 
-## 变量
+## <a id="变量">变量</a>
 
 ### 变量定义
 
@@ -299,7 +312,7 @@ var1="hello world"  -->  error,readonly variable
 
 > 取消声明为typeset +r，其他选项同理
 
-## 函数
+## <a id="函数">函数</a>
 
 Linux Shell中的函数和大多数编程语言中的函数一样，都是用于封装、复用代码。
 
@@ -366,7 +379,7 @@ vim base.lib
 . /root/shell/base.lib
 ```
 
-## find
+### <a id="find">find</a>
 
 find命令用于在磁盘上查找符合条件的文件。
 
@@ -388,7 +401,7 @@ find命令用于在磁盘上查找符合条件的文件。
 - -type：按文件类型查找
 - -size -n +n：根据文件大小查找
 
-## grep
+## <a id="grep">grep</a>
 
 grep是过滤器，在指定文件中或者接收其他命令的输出，在其中查找符合条件的内容。
 
@@ -455,7 +468,7 @@ shell is Linux language!
 Shell is Linux language!
 ```
 
-## sed
+## <a id="sed">sed</a>
 
 Sed（Stream Editor）是流编辑器，对标准输出或者文件逐行进行处理。
 
@@ -616,5 +629,238 @@ SHELL is Linux language!
 
 ```
 
-## awk
+## <a id="awk">awk</a>
+
+awk是一个数据报告生成器，可以对一个复杂的文本根据我们需要进行处理并生成一个报告。
+
+### 语法格式
+
+- awk 'BEGIN{}pattern{commands}END{}' file_name
+- command | awk 'BEGIN{}pattern{commands}END{}'
+
+在文本/标准输出处理之前执行BEGIN里的命令，然后进行根据pattern进行匹配，对匹配到的内容执行commands里的命令，最后执行END里面的命令
+
+### 常用选项
+
+- -v：参数传递，将外部参数传递进awk中
+- -f：指定脚本文件执行
+- -F：指定分隔符
+- -V：查看awk版本号
+
+### 常用匹配模式(Pattern)
+
+- 按正则表达式语法匹配
+- 按关系运算匹配
+  - \>
+  - <
+  - \>=
+  - <=
+  - ==
+  - !=
+  - ||   或
+  - &&   与
+  - ！  非
+  - ~   匹配正则表达式
+  - !~   不匹配正则表达式
+
+### 输出命令(commands)
+
+- print：输出，默认回车换行符
+- printf：格式化输出，没有默认回车换行符
+  - %s：打印字符串
+  - %d：打印十进制数
+  - %f：打印一个浮点数
+  - %e：以科学计数法打印
+  - %c：打印单个字符ASCII码
+
+### awk中的内置变量
+
+awk中内置了很多默认变量，我们可以通过修改变量更改awk模式：
+
+- $0：整行内容
+- $1-$n：当前行的第1-n个字段，根据分隔符计算，分隔符可设置
+- NF：当前行的字段个数，即列数
+- NR：当前行的行号，多文件处理时连续计数
+- FNR：当前行的行号，多文件处理时，每个文件从0开始
+- FS：输入字段分隔符，默认以空格或tab分割
+- RS：输入行分隔符，默认回车换行
+- OFS：输出字段分隔符，默认空格
+- ORS：输出行分隔符，默认回车
+- FILENAME：当前输入的文件名称
+- ARGC：命令行参数个数
+- ARGV：命令行参数数组
+
+### awk中的算数运算符
+
+awk中也可以使用算数运算符对数据进行处理最后再输出。
+
+- +
+- -
+- *
+- /
+- %
+- ^或**   乘方
+- ++x 
+- x++
+
+### awk中的流程控制
+
+- if
+
+```shell
+if(条件表达式)
+  动作1
+else if(条件表达式)
+  动作2
+else
+  动作3 
+  
+输出第三列大于50且小于100的所有行信息
+[root@instance-cngw2m1f awk]#  awk 'BEGIN{FS=":"}{if($3>50 && $3<100) print $0}' /etc/passwd
+nobody:x:99:99:Nobody:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+tcpdump:x:72:72::/:/sbin/nologin
+
+[root@instance-cngw2m1f awk]# awk 'BEGIN{FS=":"}{if($3<50){printf "%-10s%-10s%-5d\n","小于50",$1,$3 } else if($3<100) {printf "%-10s%-10s%-5d\n","小于100",$1,$3}}' /etc/passwd
+小于50      root      0    
+小于50      bin       1    
+小于50      daemon    2    
+小于50      adm       3    
+小于50      lp        4    
+小于50      sync      5    
+小于50      shutdown  6    
+小于50      halt      7    
+小于50      mail      8    
+小于50      operator  11   
+小于50      games     12   
+小于50      ftp       14   
+小于100     nobody    99   
+小于100     dbus      81   
+小于50      rpc       32   
+小于100     sshd      74   
+小于100     postfix   89   
+小于50      ntp       38   
+小于100     tcpdump   72   
+```
+
+- while
+
+```shell
+while(条件表达式)
+	动作
+	
+[root@instance-cngw2m1f awk]# vim while.awk
+BEGIN{
+	while(i<=100)
+	{
+		sum+=i
+		i++
+	}
+	print sum	
+}
+
+[root@instance-cngw2m1f awk]# awk -f while.awk 
+5050
+```
+
+- for
+
+```shell
+for(初始化;终止条件;计数器更新)
+	动作
+	
+[root@instance-cngw2m1f awk]# vim for.awk
+BEGIN{
+	for(i=0;i<=100;i++){
+		sum+=i
+	}
+	print sum
+}
+[root@instance-cngw2m1f awk]# awk -f for.awk 
+5050
+```
+
+### awk中的字符串函数
+
+- length(str)：计算字符串长度
+- index(str1,str2)：在str1中查找str2位置，返回位置索引
+- tolower(str)：转换小写
+- toupper(str)：转换大写
+- substr(str,m,n)：从str的m位开始截取长度为n的字符串
+- split(str,arr,fs)：按fs切割字符串，保存arr数组里，返回切割的个数
+- match(str,RE)：在str中按照RE正则表达式查找返回下标
+- sub(RE,Repstr,str)：在str中搜索符合RE的字符串，将其替换为Restr，只替换第一个
+- gsub(RE,Repstr,str)：在str中搜索符合RE的字符串，将其替换为Restr，全部替换
+
+### awk中的数组
+
+
+
+
+
+### Demo
+
+```shell
+以：为分隔符输出每行第一个字段
+[root@instance-cngw2m1f ~]# awk 'BEGIN{FS=":"}{print $1}' /etc/passwd
+root
+bin
+daemon
+........
+
+以：为分隔符输出每一行的字段个数
+[root@instance-cngw2m1f ~]# awk 'BEGIN{FS=":"}{print NF}' /etc/passwd
+7
+7
+7
+...........
+
+以：为输入分隔符，以|为输出分割符输出每行的第一列和第六列
+[root@instance-cngw2m1f ~]# awk 'BEGIN{FS=":";OFS="|"}{print $1,$6}' /etc/passwd
+root|/root
+bin|/bin
+daemon|/sbin
+..............
+
+以：为分隔符，将以root开头的行进行输出
+[root@instance-cngw2m1f ~]#  awk 'BEGIN{FS=":"}/^root/{print $0}' /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+
+以：为分隔符，输出第三列大于50的所有行信息
+[root@instance-cngw2m1f ~]# awk 'BEGIN{FS=":"}$3>50{print $0}' /etc/passwd
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+
+以：为分隔符，输出第一列为root的所有行信息
+[root@instance-cngw2m1f ~]# awk 'BEGIN{FS=":"}$1=="root"{print $0}' /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+
+以：为分隔符，输出第三列是三个数字以上的所有行信息
+[root@instance-cngw2m1f ~]# awk 'BEGIN{FS=":"}$3~/[0-9]{3,}/{print $0}' /etc/passwd
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+polkitd:x:999:998:User for polkitd:/:/sbin/nologin
+
+统计空白行个数
+[root@instance-cngw2m1f awk]# awk '/^$/{num++}END{print num}' test
+13
+
+-v选项引入外部定义变量
+[root@instance-cngw2m1f awk]# num=16
+[root@instance-cngw2m1f awk]# awk -v num1=$num 'BEGIN{print num1}'
+16
+
+
+
+
+
+```
+
+
+
+## <a id="Shell脚本实战">Shell脚本实战</a>
+
+
 

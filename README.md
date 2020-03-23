@@ -46,6 +46,8 @@
 
 [Vue]()
 
+[线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/线程池.md)
+
 ## DB
 
 [数据库系统原理]()
@@ -57,6 +59,8 @@
 [Redis]()
 
 [MongoDB]()
+
+[Neo4j](https://github.com/Rocks526/Java-Notes/blob/master/docs/Neo4j.md)
 
 ## 常用框架
 

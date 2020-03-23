@@ -26,6 +26,10 @@
 
 [Java注解]()
 
+[JavaNIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/JavaNIO.md)
+
+[Java序列化](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java序列化.md)
+
 [Java线程池]()
 
 [Java虚拟机]()
@@ -46,7 +50,7 @@
 
 [Vue]()
 
-[线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/线程池.md)
+[MySQL线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/线程池.md)
 
 ## DB
 

@@ -28,8 +28,6 @@
 
 [JavaNIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/JavaNIO.md)
 
-[Java序列化](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java序列化.md)
-
 [Java线程池]()
 
 [Java虚拟机]()

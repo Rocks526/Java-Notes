@@ -301,21 +301,113 @@ CentOS有两套网络管理工具包：
 
 # <a id="Linux软件包管理">Linux软件包管理</a>
 
+**Linux安装软件方式**：
 
+- 软件包管理工具安装
+- 源代码编译安装
 
+****
 
+**软件包管理器**
 
+软件包管理器是方便软件安装，卸载，解决软件依赖冲突关系的重要工具
 
+- CentOS，RedHat使用yum包管理器，软件安装格式为rpm
+- Debian，Ubuntu使用apt包管理器，软件安装格式为deb
 
+****
 
+**rpm包**
+
+- rpm包格式
+
+vim-comman-7.4.10-5.el7.x86_64.rpm：软件名称-软件版本-系统版本-平台
+
+- rpm命令常用参数
+  - -q：查询软件包
+  - -qa：查询安装的所有软件包
+  - -i：安装软件包
+  - -e：卸载软件包
+
+> rpm安装软件包时需要自己解决依赖冲突问题
+
+****
+
+**yum安装软件包**
+
+- yum配置文件
+  - /etc/yum.repos.d/CentOS-Base.repo
+  - wget -O /etc/yum.repos.d/CentOS-Base.repo覆盖原文件
+
+- yum源
+  - http://mirror.centos.org/centos/7/
+  - https://opsx.alibaba.com/mirror
+
+- yum常用命令参数
+  - install：安装软件包
+  - remove：卸载软件包
+  - list | grouplist：查看软件包
+  - update：更新软件包
+
+****
+
+**源代码编译安装**
+
+- 获取开源的源码压缩包
+- 解压
+  - tar -xzvf
+- 编译
+  - make 
+- 安装
+  - make install
 
 # <a id="Linux状态监控">Linux状态监控</a>
 
+**进程管理**
 
+- Linux中进程的状态
+  - D：不可中断
+  - R：运行中
+  - S：中断
+  - T：停止
+  - Z：僵死
 
+- 进程查看命令
+  - ps
+    - ps -ef
+    - ps aux
+  - ps tree
+  - top
 
+- 进程优先级调整
+  - nice范围从-20到19，值越小优先级越高
+  - renice重新设置优先级
+- 进程后台运行
+  - &
+- 查看后台运行的进程
+  - jobs
+- 将后台进程掉回前台运行
+  - fg 
+- 进程间通信方式
+  - 管道符
+  - 信号
+    - ctrl + c
+    - kill -l：查看所有信号
+    - kill -9：强制退出
+- nohup
+  - nohup 'command' &：与守护线程类似，后台运行，且输出打印进别的文件，终端关闭也会将继续运行
 
+****
 
+**内存与磁盘管理**
+
+- 内存查看
+  - free
+  - top
+- 磁盘查看
+  - fdisk
+  - df
+  - du
 
 # <a id="Shell脚本">Shell</a>
 
@@ -409,12 +501,14 @@ echo var > b.txt
 
 - wc：统计文本信息
   - wc -l：统计个数
-
 - sh -x：调试脚本命令，打印脚本运行情况
-
 - read：接收用户输入命令
-- $$：在脚本内部，通过$$可以获得执行当前脚本的进程ID，可用于根据id过滤
+- $$：在脚本内部，通过$$可以获得执行当前脚本的进程ID，可用于根据id过滤，也可通过$0过滤
 - $?：获得上一条命令执行结果
+- $#：传入参数个数
+- shift：跳过某个参数
+- $@：所有剩余参数
+- /dev/null：垃圾桶
 - exit：程序退出命令
   - exit10：返回10，一般非0表示异常退出
 
@@ -1330,7 +1424,7 @@ id	username	passwd
 ----------------------------------------------
 利用Shell将id为奇数且密码以09开头的数据导入MySQL
 ----------------------------------------------
-#!/bin/bash
+#!bin/bash
 # 从文本导入数据到MySQL
 
 mysql_user="$1"
@@ -1368,7 +1462,7 @@ delete filename:删除FTP服务器上的文件
 -n 禁止自动登录到初始连接。
 -i 多个文件传送时关闭交互提示。
 ------------------------------------------------
-#!/bin/bash
+#!bin/bash
 # 备份MySQL数据通过ftp传输远端
 
 mysql_user="shell"

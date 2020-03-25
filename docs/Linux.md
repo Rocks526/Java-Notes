@@ -1495,4 +1495,258 @@ mysqldump -u"$mysql_user" -p"$mysql_passwd" -h"$mysql_host" test user > $file_na
 可以通过crontab定时任务不断执行脚本，实现定时备份
 ```
 
-- 
+- 根据配置文件实现对进程的批量管理
+
+```shell
+配置文件格式：
+# 所有分组列表
+[Group_list]
+WEB
+DB
+Other
+
+# WEB分组
+[WEB]
+httpd
+nginx
+tomcat
+
+# 数据库分组
+[DB]
+mysql
+redis
+neo4j
+
+# Other分组
+[Other]
+springboot-kafka
+springboot-redis
+
+# http服务
+[httpd]
+
+# nginx服务
+[nginx]
+
+
+# tomcat服务
+[tomcat]
+
+# mysql服务
+[mysql]
+
+# redis服务
+[redis]
+
+# springboot-kafka服务
+[springboot-kafka]
+
+# springboot-redis服务
+[springboot-redis]
+
+----------------------------------------------------
+查看进程状态
+	- 无参数：全部查看
+	- -p参数：指定进程名查看 可以指定多个
+	- -g参数：指定分组查看 可指定多个
+vim process_status.sh
+#！bin/bash
+#
+# 进程管理程序，根据process.conf配置文件查看进程状态
+
+# 变量
+BASE_DIR="/root/shell/process"
+CONF_FILE="process.conf"
+this_pid=$$
+
+# 获取所有分组
+function get_all_group
+{
+	group_list=`sed -n '/\[Group_list\]/,/\[.*\]/p' $BASE_DIR/$CONF_FILE | grep -v grep | grep -v "#.*" | 
+										grep -v "^$" | grep -v "\[.*\]" | grep -v $this_pid`
+	echo "$group_list" 
+}
+
+
+# 根据分组获取组内所有进程
+#	- 参数一：组名
+function get_process_by_group
+{
+	process=`sed -n '/\[$1\]/,/\[.*\]/p' $BASE_DIR/$CONF_FILE | grep -v grep | grep -v "#.*" | 
+										grep -v "^$" | grep -v "\[.*\]" | grep -v $this_pid`
+	echo "$process"
+}
+
+
+# 获取所有进程
+function get_all_process
+{
+	for g in `get_all_group`
+	do
+		process_list=`get_process_by_gourp $g`
+		echo "$process_list"
+	done
+}
+
+
+# 根据进程名获取进程id
+# 	- 参数一：进程名
+function get_processid_by_processname
+{
+	pids=ps -ef | grep $1 | grep -v grep | grep -v $this_pid | grep -v $0 | awk '{print $2}'
+	echo "$pids"
+}
+
+# 获取进程详细信息
+# 	- 参数一：进程id
+function get_process_info_by_processid
+{
+	ps -ef | awk -v p_id=$1 '$2==p_id' &> dev/null
+	if [$? -ne 0]
+	then
+		process_status="RUNNING"
+	else
+		process_status="STOPPED"
+	fi
+	process_cpu=`ps aux | awk -v p_id=$1 '$2==p_id{print $3}'`
+	process_mem=`ps aux | awk -v p_id=$1 '$2==p_id{print $4}'`
+	process_start_time=`ps -p $1 -o lstart | grep -v STARTED`
+}
+
+
+# 进程信息格式化输出
+# 	- 参数一：进程名
+# 	- 参数二：组名
+# 	- 针对每个进程ID输出
+function format_process_info
+{
+        ps -ef | grep $1 | grep -v grep | grep -v $this_pid &> /dev/null
+        if [ $? -eq 0 ]
+        then
+                pids=`get_processid_by_processname $1`
+                for pid in $pids
+                do
+                        get_process_info_by_processid $pid
+                        awk -v p_name=$1 \
+                                -v g_name=$2 \
+                                -v p_id=$pid \
+                                -v p_status=$process_status \
+                                -v p_cpu=$process_cpu \
+                                -v p_mem=$process_mem \
+                                -v p_time="$process_start_time" \
+                                'BEGIN{printf "%-20s%-10s%-10s%-10s%-10s%-10s%-20s\n",p_name,g_name,p_id,p_status,p_cpu,p_mem,p_time}'
+                done
+        else
+                awk -v p_name=$1 \
+                        -v g_name=$2 \
+                        'BEGIN{printf "%-20s%-10s%-10s%-10s%-10s%-10s%-20s\n",p_name,g_name,"NULL","NULL","NULL","NULL","NULL"}'
+        fi
+}
+
+
+
+# 判断组名是否在配置文件中
+#	- 参数一为组名
+#	- 返回0代表在配置文件中 1不在
+function is_group_in_conf
+{
+	for gn in `get_all_group`
+	do
+		if [ $gn == $1 ]
+		then
+			return 0
+		fi
+	done
+	return 1
+}
+
+# 判断进程名是否在配置文件中
+#	- 参数一为进程名
+#	- 返回0代表在配置文件中 1不在
+function is_process_in_conf
+{
+	for pn in `get_all_process`
+	do
+		if [ $pn == $1 ]
+		then
+			return 0
+		fi
+	done
+	return 1
+}
+
+# 根据进程名称获取组名称
+# 	- 参数一：进程名
+# 	- 返回值：组名
+function get_group_by_process
+{
+	for gn in `get_all_group`
+	do
+		for pn in `get_process_by_group $gn`
+		do
+			if [ $pn == $1 ]
+			then
+				echo $gn
+			fi
+	done
+}
+
+# 配置文件检查
+function check_conf
+{
+	if [ ! -e $BASE_DIR/CONF_FILE ]
+	then
+		echo "$BASE_DIR/CONF_FILE is not exist..."
+		exit 1
+	fi
+}
+
+
+
+	
+
+
+check_conf
+awk 'BEGIN{printf "%-20s%-15s%-10s%-10s%-10s%-10s%-20s\n","ProcessName","GroupName","PID","Status","CPU","Memory","StartTime"}'
+# 获取输入参数
+if [ $# -eq 0 ]
+then
+        for pn in `get_all_process`
+        do
+                echo $pn
+        done
+elif [ $# -ge 2 -a $1 == "-g" ]
+then
+        shift
+        for gn in $@
+        do
+        	is_group_in_conf $gn
+        	if [ $? -eq 1 ]
+        	then
+        		echo "$gn is not exist in process.conf"
+        	else
+            	for pn in `get_process_by_group $gn`
+            	do
+            	        format_process_info $pn $gn
+            	done
+            fi
+        done
+elif [ $# -ge 2 -a $1 == "-p" ]
+then
+        shift
+        for pn in $@
+        do
+                is_process_in_conf $pn
+                if [ $? -eq 1 ]
+                then
+                	echo "$pn is not exist in process.conf"
+                else
+                	gn=`get_group_by_process $pn`
+                	format_process_info $pn $gn
+                fi           
+        done
+else
+        echo "Param Exception...Please check.."
+fi
+```
+

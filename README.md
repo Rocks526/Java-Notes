@@ -18,6 +18,18 @@
 
 [数据结构与算法]()
 
+## Python语言
+
+[Python基础]()
+
+[Python高级特性]()
+
+[Django]()
+
+[Flask]()
+
+[scrapy]()
+
 ## Java语言
 
 [Jdk源码](https://github.com/Rocks526/Jdk8-Notes)
@@ -48,9 +60,7 @@
 
 [Vue]()
 
-[MySQL线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/线程池.md)
-
-## DB
+## 存储
 
 [数据库系统原理]()
 
@@ -58,21 +68,53 @@
 
 [MySQL]()
 
+[MySQL线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/MySQL线程池.md)
+
+[PostgreSQL]()
+
 [Redis]()
 
 [MongoDB]()
 
 [Neo4j](https://github.com/Rocks526/Java-Notes/blob/master/docs/Neo4j.md)
 
+[TiDB]()
+
+[FastDFS](https://github.com/Rocks526/Java-Notes/blob/master/docs/FastDFS.md)
+
+[Ceph]()
+
+[ElasticSearch]()
+
+## 缓存
+
+[缓存体系介绍]()
+
+[EhCache]()
+
+[Guava Cache]()
+
+[MemCache]()
+
+## 常用工具包
+
+[fastJson]()
+
+[Jackson]()
+
+[Guava]()
+
 ## 常用框架
 
 [Mybatis]()
 
+[Hibernate]()
+
 [Spring]()
 
-[SpringBoot]()
-
 [SpringMVC]()
+
+[SpringBoot]()
 
 [Spring Data JPA]()
 
@@ -92,9 +134,23 @@
 
 [Netty]()
 
-[ElasticSearch]()
+[Apoll]()
 
-[FastDFS](https://github.com/Rocks526/Java-Notes/blob/master/docs/FastDFS.md)
+## 常用工具
+
+[Git]()
+
+[Maven]()
+
+[Jekins]()
+
+[Postman]()
+
+[JMeter]()
+
+[LoadRunner]()
+
+[Zabbix]()
 
 ## 面试题
 

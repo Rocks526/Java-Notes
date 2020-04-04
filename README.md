@@ -1,13 +1,5 @@
 # Java-Notes
 
-## 算法
-
-[算法基础]()
-
-[剑指offer题解]()
-
-[LeetCode题解]()
-
 ## 计算机基础
 
 [操作系统]()
@@ -16,7 +8,15 @@
 
 [计算机组成原理]()
 
+[数据库系统原理]()
+
+## 算法
+
 [数据结构与算法]()
+
+[剑指offer题解]()
+
+[LeetCode题解]()
 
 ## Python语言
 
@@ -62,13 +62,7 @@
 
 ## 存储
 
-[数据库系统原理]()
-
-[SQL]()
-
 [MySQL]()
-
-[MySQL线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/MySQL线程池.md)
 
 [PostgreSQL]()
 
@@ -120,7 +114,11 @@
 
 [Spring Cloud]()
 
-## 中间件
+[Shiro]()
+
+[Quartz]()
+
+## MQ
 
 [RocketMQ]()
 
@@ -128,9 +126,15 @@
 
 [Kafka]()
 
-[Zookeeper]()
+## RPC
 
 [Dubbo]()
+
+[ZooKeeper]()
+
+[Eureka]()
+
+[etcd]()
 
 [Netty]()
 

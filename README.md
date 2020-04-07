@@ -158,3 +158,8 @@
 
 ## 面试题
 
+
+## 其他
+
+[常见问题&解决方案汇总](https://github.com/Rocks526/Java-Notes/blob/master/docs/常见问题&解决方案汇总.md)
+

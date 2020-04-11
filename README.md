@@ -20,7 +20,7 @@
 
 ## Python语言
 
-[Python基础]()
+[Python基础](https://github.com/Rocks526/Java-Notes/blob/master/docs/Python基础.md)
 
 [Python高级特性]()
 

@@ -1032,6 +1032,162 @@ else:
 
 # <a id="hs">Python函数</a>
 
+程序中反复执行的代码可以封装到一个代码块中，这个代码块模仿了数学中的函数，具有函数名、参数和返回值，这就是程序中的函数。 Python中的函数很灵活，它可以在模块中 、但是在类之外定义，即函数，其作用域是当前模块；也可以在别的函数中定义，即嵌套函数，还可以在类中定义， 即方法。
+
+之前用到的一些如len()，min()等都是python官方定义的内置函数。
+
+### 函数定义
+
+python作为解释性语言，函数必须先定义再调用。函数定义格式如下：
+
+def 函数名（参数列表）：
+
+​	函数体
+
+​	return 返回值
+
+```python
+# 函数定义
+def first_function():
+    print("This is my first function")
+
+
+def second_function(width,height):
+    area = width * height
+    return area
+
+
+# 函数调用
+first_function()
+res = second_function(10, 22)
+print(res)
+```
+
+### 函数参数
+
+函数的参数与Java类似，但可以有默认值，python通过参数默认值和可变参数可以实现类似Java的函数重载
+
+```python
+# 参数设置默认值  python中没有Java的函数重载 不过可以通过默认值和可变参数的方式实现类似重载
+def third_function(width=10, height=20):
+    area = width * height
+    return area
+
+
+# 可变参数有两种*和**  *的参数作为元组传入  **参数作为字典传入
+def four_function(*numbers, weight=1):
+    total = 0.0
+    for number in numbers:
+        total += number
+    return total * weight
+
+
+# **可变参数
+def fifth_function(**students):
+    for key, value in students.items():
+        print("{0}---->{1}".format(key, value))
+        
+        
+res = four_function(12, 15, 79, 52.6, 143.9, weight=2)
+print(res)
+fifth_function(name='lzx', age=21, sex=1)
+```
+
+### 函数返回值
+
+- 无返回值
+  - 不写return语句
+  - 返回None
+- 有返回值
+  - 返回单个
+  - 返回多个
+    - 返回元组之类的集合类型
+
+### 函数变量作用域
+
+变量可以在模块中创建，其作用域是整个模块，称为全局变量。
+
+变量也可以在函数中创建，默认情况下其作用域是整个函数，称为局部变量。
+
+函数中可以访问全局变量，但函数外不可访问函数中的变量，这是为了减少程序出错，不过python也提供了golbal关键字可以让函数中的变量成为全局变量。
+
+### 生成器
+
+在一个函数中经常使用 return 关键字返回数据，但是有时候会使用 yield 关键字返回数据。
+
+使用 yield 关键字的函数返回的是一个生成器 （generator）对象， 生成器对象是一种可迭代对象。
+
+ ```python
+# 生成器
+# 获取一个平方数列
+def square(number):
+    list1 = []
+    for i in range(number + 1):
+        list1.append(i * i)
+    return list1
+
+
+for item in square(5):
+    print(item, end=" ")
+
+
+# 获取一个平方数列
+def square2(number):
+    for i in range(number + 1):
+        yield i * i
+
+
+for item in square2(5):
+    print(item, end=" ")
+print("----------------------------------")
+res = square2(5)
+print(res.__next__())
+print(res.__next__())
+print(res.__next__())
+ ```
+
+yield返回的是一个可迭代对象，可以通过__next__方法依次获取元素，也可以通过for循环完成迭代。
+
+生成器函数通过 yield 返回数据，与 return 不同的是， return 语句一次返回所有数据，函数调用结束；而 yieldi语句只返回一个元素数据，函数调用不会结束，只是暂停，直到__next__（） 方法被调 用，程序继续执行 yield 语句之后的语句代码。这个过程如下图所示：
+
+![image-20200202225423845](C:\Users\67409\AppData\Roaming\Typora\typora-user-images\image-20200202225423845.png)
+
+### 嵌套函数
+
+函数可以定义在另外的函数体中，称作“嵌套函数”。
+
+```python
+# 嵌套函数
+def calculate(n1, n2, opr):
+    def add(a, b):
+        return a + b
+
+    def sub(a, b):
+        return a - b
+
+    if opr == '+':
+        return add(n1, n2)
+    elif opr == '-':
+        return sub(n1, n2)
+    else:
+        return 0
+
+
+print(calculate(10, 15, '+'))
+```
+
+在函数外不可以调用嵌套里的函数
+
+
+
+
+
+
+
+
+
+
+
 
 
 # <a id="dx">Python面向对象</a>

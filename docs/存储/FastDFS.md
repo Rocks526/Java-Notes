@@ -292,7 +292,7 @@ FastDFS提供客户端和服务端，支持客户端将图片上传至某个服�
 
 使用Nginx-FastDFS的优点：
 
-- 如果开启文件合并，不使用FastDFS的nginx扩展模块，是无法访问到具体的文件的，因为文件合并之后，多个小文件都是存储在一个trunk文件中的，在存储目录下，是看不到具体的小文件的。，只有FastDFS才可以解析出小文件
+- 如果开启文件合并，不使用FastDFS的nginx扩展模块，是无法访问到具体的文件的，因为文件合并之后，多个小文件都是存储在一个trunk文件中的，在存储目录下，是看不到具体的小文件的，只有FastDFS才可以解析出小文件
 - 在文件未同步成功到副本之前，不使用FastDFS的nginx扩展模块，副本服务器是无法正常访问到指定的文件的，而使用了 FastDFS的nginx扩展模块之后，如果要访问的文件未同步成功，那么会解析出来该文件的源存储服务器ip，然后将该访问请求重定向或者代理到源存储服务器中进行访问。
 
 
@@ -409,3 +409,217 @@ public interface StorageService {
 
 - 注入FastDfs服务实现类
 
+```java
+package com.rocks.springboot.fastdfs.service.Impl;
+
+import com.rocks.springboot.fastdfs.exception.FastDfsException;
+import com.rocks.springboot.fastdfs.service.StorageService;
+import lombok.extern.slf4j.Slf4j;
+import org.csource.common.NameValuePair;
+import org.csource.fastdfs.*;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+/**
+ * FastDfs文件存储服务
+ *
+ * @author Rocks526
+ * @version 1.0.0
+ * @date 2020/4/30 13:17
+ */
+@Slf4j
+@Service
+public class FastDfsServiceImpl implements StorageService, InitializingBean {
+
+
+    private TrackerServer trackerServer = null;
+
+    private TrackerClient trackerClient = null;
+
+    private StorageServer storageServer = null;
+
+    private StorageClient storageClient = null;
+
+    @Value("${storage.fastdfs.tracker_server}")
+    private String trackerServerIP;
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @Override
+    public String upload(byte[] data, String extName) {
+        try{
+            Date date = new Date();
+            String createTime = simpleDateFormat.format(date);
+            //元数据
+            NameValuePair[] meta_list = new NameValuePair[2];
+            meta_list[0] = new NameValuePair("author", "Rocks526");
+            meta_list[1] = new NameValuePair("createTime", createTime);
+            String[] res = storageClient.upload_file(data, extName,null);
+            StringBuilder filePath = new StringBuilder();
+            filePath.append(res[0]).append("/").append(res[1]);
+            return filePath.toString();
+        }catch (Exception e){
+            throw new FastDfsException("FastDfs文件上传失败！",e);
+        }
+    }
+
+
+    @Override
+    public int delete(String filePath) {
+        try{
+            int index = filePath.indexOf('/');
+            String groupName = filePath.substring(0, index);
+            String fileName = filePath.substring(index+1);
+            return storageClient.delete_file(groupName,fileName);
+        }catch (Exception e){
+            throw new FastDfsException("FastDfs文件删除失败！",e);
+        }
+    }
+
+    @Override
+    public byte[] downLoad(String filePath) {
+        try{
+            int index = filePath.indexOf('/');
+            String groupName = filePath.substring(0, index);
+            String fileName = filePath.substring(index+1);
+            byte[] bytes = storageClient.download_file(groupName, fileName);
+            return bytes;
+        }catch (Exception e){
+            throw new FastDfsException("FastDfs文件下载失败！",e);
+        }
+    }
+
+
+    //初始化
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        File confFile = File.createTempFile("FastDfs", ".conf");
+        PrintWriter confWriter = new PrintWriter(new FileWriter(confFile));
+        confWriter.println("tracker_server=" + trackerServerIP);
+        confWriter.close();
+        ClientGlobal.init(confFile.getAbsolutePath());
+        confFile.delete();
+        trackerClient = new TrackerClient();
+        trackerServer = trackerClient.getTrackerServer();
+        storageClient = new StorageClient1(trackerServer, storageServer);
+        log.info("Init FastDFS Success! Tracker_server : {}", trackerServer);
+    }
+
+}
+```
+
+- 创建测试Controller
+
+```java
+package com.rocks.springboot.fastdfs.controller;
+
+import com.rocks.springboot.fastdfs.service.StorageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.stream.FileImageOutputStream;
+import java.io.*;
+
+/**
+ * FastDfs文件存储服务测试
+ *
+ * @author Rocks526
+ * @version 1.0.0
+ * @date 2020/4/30 15:43
+ */
+@RestController
+public class DemoController {
+
+
+    @Autowired
+    private StorageService storageService;
+
+
+
+    @RequestMapping(value = "/upload",method = RequestMethod.POST)
+    public String uploadFile(@RequestBody MultipartFile uploadFile) throws IOException {
+        // 获取文件后缀
+        String fileName = uploadFile.getOriginalFilename();
+        String extName = fileName.substring(fileName.lastIndexOf(".") + 1);
+        String filePath = storageService.upload(uploadFile.getBytes(),extName);
+        return filePath;
+    }
+
+    @RequestMapping(value = "/delete",method = RequestMethod.DELETE)
+    public String uploadFile(@RequestParam(value = "filePath",required = true) String filePath)  {
+        int delete = storageService.delete(filePath);
+        if ( delete == 0){
+            return "success!";
+        }
+        return "failed!";
+    }
+
+    @RequestMapping(value = "/downLoad",method = RequestMethod.GET)
+    public String downLoadFile(@RequestParam(value = "filePath",required = true) String filePath) throws IOException {
+
+        String extName = filePath.substring(filePath.lastIndexOf(".") + 1);
+        byte[] bytes = storageService.downLoad(filePath);
+        String path = "C:\\Users\\Rocks526\\Desktop\\downLoad." + extName;
+        FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));
+        imageOutput.write(bytes, 0, bytes.length);
+        imageOutput.close();
+        System.out.println("Make Picture success,Please find image in " + path);
+        return "success!";
+    }
+
+
+}
+```
+
+- 自定义FastDfs服务异常
+
+```java
+package com.rocks.springboot.fastdfs.exception;
+
+import lombok.Data;
+
+/**
+ * FastDfs异常
+ *
+ * @author Rocks526
+ * @version 1.0.0
+ * @date 2020/4/30 15:26
+ */
+@Data
+public class FastDfsException extends RuntimeException {
+
+    private String msg;
+
+    private Throwable cause;
+
+    public FastDfsException(String msg) {
+        super(msg);
+        this.msg = msg;
+        this.cause = null;
+    }
+
+    public FastDfsException(String msg,Throwable cause) {
+        super(msg,cause);
+        this.msg = msg;
+        this.cause = cause;
+    }
+
+}
+```
+
+****
+
+### 注意事项
+
+- 上传文件时的元数据可以自定义，但需要注意数组长度，如果数组存在空的位置，上传文件时会抛出NPE
+- 删除文件时，groupName和fileName都没有之前的"/"，如果出现"/"，删除会返回状态码22，多次删除可能抛出异常
+- 使用Java操作FastDfs时，除了这个原生客户端之外，github上还有一个基于原生客户端封装的Java客户端，适合集成SpringBoot，地址：https://github.com/tobato/FastDFS_Client

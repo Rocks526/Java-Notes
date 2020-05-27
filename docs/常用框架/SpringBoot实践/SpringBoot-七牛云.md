@@ -25,6 +25,19 @@
 
 > Version中的`[7.2.0, 7.2.99]`指定了一个版本范围，每次更新`pom.xml`的时候会尝试去下载`7.2.x`版本中的最新版本，也可以手动指定一个固定的版本。
 
+- 配置文件
+
+```properties
+# app
+server.port=8080
+
+# 七牛云
+storage.qiniuyun.ak=IKrM5PyfYUQ72vqycBPb-5MiIFtEk5ZQRc8I7
+storage.qiniuyun.sk=8lTZQeq6wAl-WFblkLw36H_ikjaLUmzBRyuNW
+storage.qiniuyun.bucket=xupt-msi
+storage.qiniuyun.domain=http://qazg8i8d9.bkt.clouddn.com
+```
+
 - Service接口定义
 
 ```java

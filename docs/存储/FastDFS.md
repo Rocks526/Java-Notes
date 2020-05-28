@@ -394,8 +394,6 @@ FastDfs的官方Java客户端地址：https://github.com/happyfish100/fastdfs-cl
 
 下载之后打开项目，用Maven编译打包到本地仓库
 
-![image-20200430115318338](C:\Users\lizhaoxuan\AppData\Roaming\Typora\typora-user-images\image-20200430115318338.png)
-
 - 创建SpringBoot项目，引入web和fastdfs依赖
 
 ```xml

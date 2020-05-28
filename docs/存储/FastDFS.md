@@ -86,7 +86,7 @@ yum install -y gcc-c++
 - 安装libfastcommon核心包
 
 ```shell
-https://github.com/happyfish100/libfastcommon/releases
+wget https://github.com/happyfish100/libfastcommon/archive/V1.0.43.tar.gz
 
 tar -xzvf libfastcommon-1.0.43.tar.gz 
 
@@ -100,7 +100,11 @@ cd libfastcommon-1.0.43/
 - 安装fastdfs
 
 ```shell
+wget https://github.com/happyfish100/fastdfs/archive/V6.06.tar.gz
+
 tar -xzvf fastdfs-6.06.tar.gz 
+
+cd fastdfs-6.06
 
 ./make.sh
 
@@ -110,7 +114,7 @@ tar -xzvf fastdfs-6.06.tar.gz
 - 配置Tracker Server
 
 ```shell
-cd /root/fastdfs/fastdfs-6.06/conf/
+cd conf
 
 vim tracker.conf 
 
@@ -122,8 +126,6 @@ mkdir /root/fastdfs/tracker -p
 - 配置Storage Server
 
 ```shell
-cd /root/fastdfs/fastdfs-6.06/conf/
-
 vim storage.conf 
 
 #指定storage的组名 
@@ -154,7 +156,7 @@ mkdir /root/fastdfs/storage -p
 - 查看集群状态
 
 ```shell
-fdfs_monitor /root/fastdfs/fastdfs-6.06/conf/storage.conf 
+/usr/bin/fdfs_monitor /root/fastdfs/fastdfs-6.06/conf/storage.conf 
 ```
 
 FastDFS启动成功后，在/root/fastdfs/storage和/root/fastdfs/tracker目录下新增data和logs目录，用于文件存储和日志存储
@@ -173,6 +175,8 @@ FastDFS启动成功后，在/root/fastdfs/storage和/root/fastdfs/tracker目录�
 > - killall fdfs_trackerd
 > - killall fdfs_storaged
 > - 如果没有killall命令则通过yum install psmisc -y安装
+>
+> 安装过程中，尽量使用绝对路径，其次记得开放Tracker的22122端口，如果安装出现问题，可以打开日志查看错误信息
 
 ------
 
@@ -214,13 +218,11 @@ example file url: http://106.13.146.213/group1/M00/00/00/ag2S1V58TK-AOs7iAAAAR7B
 >
 > fdfs_test --help可以查看fdfs_test的其他命令.
 
-
-
 # <a id="pz">FastDFS配置</a>
 
-- Tracker Server配置详解
+- Tracker Server配置文件
 
-```shell
+```properties
 # 此配置文件是否生效 false生效  true不生效
 disable = false
 # 绑定的IP地址，一般用于服务器有多个IP，绑定某个IP
@@ -235,36 +237,115 @@ network_timeout = 60
 base_path = /home/fdfs/tracker 
 # 最大连接数
 max_connections = 1024
+# 接收线程数
+accept_threads = 1
 # Work进程数 通常设置为CPU数
 work_threads = 4 
+#最小网络缓冲区大小
+min_buff_size = 8KB
+#最大网络缓冲区大小
+max_buff_size = 128KB
 # 上传文件的选组方式 0轮询 1指定组 2平衡负载，选择剩余空间最大的组
 store_lookup = 2
 # 当store_lookup为1时 此参数指定上传的组名
-store_group
+store_group = group1
 # 组内Storage选择策略 0轮询 1根据IP排序选最小 2根据优先级 值越小优先级越高
 store_server = 0
-# 上传路径的选择策略(Storage Server可以有多个存储路径)，0轮询 1选择剩余空间最大的
+# 上传路径的选择策略(Storage Server可以有多个存储路径)，0轮询 2选择剩余空间最大的
 store_path = 0
-# 下载服务器的选择方式 0轮询 1选择IP小的 2优先级
+# 下载服务器的选择方式 0轮询 1文件源服务器
 download_Server = 0
 # 保留空间值 当剩余空间不足时 文件不会上传该服务器 可指定大小 也可指定百分比
-reserved_storage_space = 1G 
+reserved_storage_space = 20% 
 # 日志级别 emerg alert crit error warn notice info debug
 log_level = info  
 # 指定操作系统运行该程序的用户组
 run_by_group = 
 # 指定操作系统运行该程序的用户
-/ run_by_user = 
+run_by_user = 
 # 可以连接到tracker Server的ip范围 可设定多个值
 allow_hosts = *
+# 日志缓存同步磁盘间隔 默认单位10s
+sync_log_buff_interval = 1
 # 检测 storage Server 存活的时间隔，单位为秒 
 # 如果tracker Server在一个check_active_interval内还没有收到storage Server的一次心跳，就认为该storage Server已经下线。所以本参数值必须大于storage Server配置的心跳时间间隔，一般为2-3倍
 check_active_interval = 120
-# 如果tracker Server在一个check_active_interval内还没有收到storage Server的一次心跳， #      那边将认为该storage Server已经下线。所以本参数值必须大于storage Server配置的心跳时间间 隔。 #      通常配置为storage Server心跳时间间隔的2倍或3倍。 check_active_interval=120 thread_stack_size #func：设定线程栈的大小。 线程栈越大，一个线程占用的系统资源就越多。 #      如果要启动更多的线程（V1.x对应的参数为max_connections，V2.0为work_threads），可以适当 降低本参数值。 #valu：如64KB，默认值为64，tracker Server线程栈不应小于64KB thread_stack_size=64KB storage_ip_changed_auto_adjust #func：这个参数控制当storage Server IP地址改变时，集群是否自动调整。注：只有在storage Server进 程重启时才完成自动调整。 #valu：true或false storage_ip_changed_auto_adjust=true
-
+# 设定线程栈的大小。 线程栈越大，一个线程占用的系统资源就越多。
+# 如果要启动更多的线程,可以适当降低本参数值。如64KB，默认值526KB，tracker Server线程栈不应小于64KB 
+thread_stack_size = 256KB
+# 这个参数控制当storage Server IP地址改变时，集群是否自动调整。注：只有在storage Server进程重启时才完成自动调整
+storage_ip_changed_auto_adjust = true
+# 存储同步文件的最大延迟时间 默认86400秒 即一天
+storage_sync_file_max_delay = 86400
+# 存储同步文件的最长时间 默认300s
+storage_sync_file_max_time = 300
+# 是否开启合并存储
+use_trunk_file = false
+# 最小槽大小 <=4KB
+slot_min_size = 256
+# 最大槽大小 当上传文件小于此值时 将其存到块中 否则尽心分块
+slot_max_size = 1MB
+# 块中对齐空间
+trunk_alloc_alignment_size = 256
+# 合并连续块中的剩余空间
+trunk_free_space_merge = true
+# 删除未使用的块文件
+delete_unused_trunk_files = false
+# 块文件大小 >=4MB
+trunk_file_size = 64MB
+# 是否提前创建块文件
+trunk_create_file_advance = false
+# 创建块文件的时基
+trunk_create_file_time_base = 02:00
+# 创建块文件的时间间隔 默认1天
+trunk_create_file_interval = 86400
+# 创建块文件阈值  当空闲块文件小于此值时开始创建
+trunk_create_file_space_threshold = 20G
+# 检查块空闲空间时发现占用 则忽略
+trunk_init_check_occupying = false
+# if ignore storage_trunk.dat, reload from trunk binlog
+trunk_init_reload_from_binlog = false
+# 压缩binlog间隔
+trunk_compress_binlog_min_interval = 86400
+# 压缩的时基
+trunk_compress_binlog_time_base = 03:00
+# binlog文件最大备份数
+trunk_binlog_max_backups = 7
+# 使用Storage Server的配置ID而不是IP，当配置双IP时必须使用
+use_storage_id = false
+# 指定Storage Server的ID的配置文件
+storage_ids_filename = storage_ids.conf
+# storage_ids.conf配置文件中ID类型，ID或IP
+id_type_in_filename = id
+# 存储从文件使用符号链接
+store_slave_file_use_link = false
+# 每天清除错误日志
+rotate_error_log = false
+# 错误日志清除时间
+error_log_rotate_time = 00:00
+# 使用gzip压缩错误日志
+compress_old_error_log = false
+# 压缩七天之前的错误日志
+compress_error_log_days_before = 7
+# 超过指定大小删除错误日志
+rotate_error_log_size = 0
+# 日志文件保留天数
+log_file_keep_days = 0
+# 是否使用连接池
+use_connection_pool = true
+# 连接池的连接最大空闲时间
+connection_pool_max_idle_time = 3600
+# Tracker Server的Http端口
+http.server_port = 8080
+# 检查Storage Server的Http是否存活间隔
+http.check_alive_interval = 30
+# 检查Storage Server是否存活的方式，可选tcp或http
+http.check_alive_type = tcp
+# 检查心跳的url
+http.check_alive_uri = /status.html
 ```
 
-
+- Storage Server配置文件
 
 
 
@@ -620,6 +701,7 @@ public class FastDfsException extends RuntimeException {
 
 ### 注意事项
 
+- 开放FastDfs服务器的23000端口
 - 上传文件时的元数据可以自定义，但需要注意数组长度，如果数组存在空的位置，上传文件时会抛出NPE
 - 删除文件时，groupName和fileName都没有之前的"/"，如果出现"/"，删除会返回状态码22，多次删除可能抛出异常
 - 使用Java操作FastDfs时，除了这个原生客户端之外，github上还有一个基于原生客户端封装的Java客户端，适合集成SpringBoot，地址：https://github.com/tobato/FastDFS_Client

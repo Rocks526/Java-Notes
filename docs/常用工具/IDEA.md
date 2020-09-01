@@ -1,0 +1,75 @@
+- [IDEA常用插件](#cj)
+- [IDEA调试](#ts)
+
+# <a id="cj">IDEA常用插件</a>
+
+- lombok
+
+>  自动生成set/get/toString/Construct等
+
+- Maven Helper
+
+>  Maven依赖分析
+
+- RestfulToolkit
+
+> 根据RestURL定位代码
+>
+> 快捷键：Alt + 反斜杠
+
+- leetcode editor
+
+> Leetcode
+
+- GenerateAllSetter
+
+> 一键调用对象的所有set方法,适合批量赋值的场景
+>
+> 快捷键Alt + Enter
+
+- GsonFormat
+
+> 根据JSON生成实体
+>
+> 快捷键Alt + S
+
+- Codota
+
+> API使用介绍、示例
+>
+> 选中方法右键
+
+- Free Mybatis Plugin
+
+> 关联接口和XML文件，相互跳转
+
+- Properties to YAML Converter
+
+> properties配置文件一键转YAML
+
+- CodeGlance
+
+> 代码编辑器迷你视图
+
+- Solarized Themes
+
+> 修改主题
+
+- Power Mode II
+
+> 增加打字效果
+
+- Backgroud Image Plus+
+
+> 修改背景图
+
+# <a id="ts">IDEA调试</a>
+
+[IDEA调试](https://www.cnblogs.com/yjd_hycf_space/p/7483471.html)
+
+[IDEA调试](https://blog.csdn.net/baidu_38634017/article/details/86484620)
+
+[SpringBoot远程Debug](https://blog.csdn.net/weixin_42740530/article/details/89524509)
+
+
+

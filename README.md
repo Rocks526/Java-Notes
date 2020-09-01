@@ -138,7 +138,9 @@
 
 [Apoll](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Apoll.md)
 
-## 常用工具
+## 开发 & 运维 & 测试工具
+
+[IDEA](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/IDEA.md)
 
 [Docker](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Docker.md)
 

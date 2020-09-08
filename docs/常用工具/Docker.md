@@ -18,7 +18,7 @@
 
 Docker 是一个开源项目，诞生于 2013 年初，最初是 dotCloud 公司内部的一个业余项目。它基于 Google 公司推出的 Go 语言实现。 项目后来加入了 Linux 基金会，遵从了 Apache 2.0 协议，项目代码在 [GitHub](https://github.com/docker/docker) 上进行维护。
 
-![image-20200827154711068](.\images\image-20200827154711068.png)
+![image-20200907173628246](http://rocks526.top/lzx/image-20200907173628246.png)
 
 Docker 自开源后受到广泛的关注和讨论，以至于 dotCloud 公司后来都改名为 Docker Inc。Redhat 已经在其 RHEL6.5 中集中支持 Docker；Google 也在其 PaaS 产品中广泛应用。
 
@@ -312,7 +312,7 @@ docker load -i 镜像文件的名字
 
     > 返回JSON内容是仓库里的镜像
 
-![image-20200827161644649](.\images\image-20200827161644649.png)
+![image-20200907173602378](http://rocks526.top/lzx/image-20200907173602378.png)
 
 - 添加远程私有仓库授信
   - Linux修改/etc/docker/deamon.json文件，加入：{"insecure-registries":["IP:5000"]}

@@ -28,7 +28,7 @@
 
 [Java注解](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java注解.md)
 
-[Jav泛型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java泛型.md)
+[Java泛型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java泛型.md)
 
 [Java日期](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java日期.md)
 
@@ -84,7 +84,7 @@
 
 [GuavaCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/GuavaCache.md)
 
-[MemCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MemCache.md)
+[MemCached](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MemCached.md)
 
 ## 常用工具包
 

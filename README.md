@@ -36,6 +36,8 @@
 
 [JavaNIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/JavaNIO.md)
 
+[Java线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java线程池.md)
+
 [Java虚拟机](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机.md)
 
 ## Web
@@ -93,6 +95,16 @@
 [XML解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/XML解析工具包.md)
 
 [Guava](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Guava.md)
+
+[Lombok](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Lombok.md)
+
+[Log日志包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Log日志包.md)
+
+[Http工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Http工具包.md)
+
+[Excel工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Excel工具包.md)
+
+[Unit工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Unit工具包.md)
 
 ## 常用框架
 

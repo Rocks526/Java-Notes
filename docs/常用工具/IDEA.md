@@ -71,7 +71,7 @@
 
 [SpringBoot远程Debug](https://blog.csdn.net/weixin_42740530/article/details/89524509)
 
-[IDEA修改快捷键为Eclipse之后Console的搜索功能丢失问题](#https://blog.csdn.net/zuoyixiao/article/details/53516252)
+[IDEA修改快捷键为Eclipse之后Console的搜索功能丢失问题](https://blog.csdn.net/zuoyixiao/article/details/53516252)
 
-[IDEA自动生成返回值全部带有final修饰问题](#https://blog.csdn.net/weixin_45636595/article/details/102892836)
+[IDEA自动生成返回值全部带有final修饰问题](https://blog.csdn.net/weixin_45636595/article/details/102892836)
 

@@ -75,3 +75,4 @@
 
 [IDEA自动生成返回值全部带有final修饰问题](https://blog.csdn.net/weixin_45636595/article/details/102892836)
 
+[IDEA解决一个类无法启动多个窗口的问题](https://blog.csdn.net/sinat_41905822/article/details/97813057)

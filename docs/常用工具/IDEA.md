@@ -51,6 +51,10 @@
 
 > 代码编辑器迷你视图
 
+- Rainbow Brackets
+
+> 彩色括号
+
 - Solarized Themes
 
 > 修改主题
@@ -76,3 +80,10 @@
 [IDEA自动生成返回值全部带有final修饰问题](https://blog.csdn.net/weixin_45636595/article/details/102892836)
 
 [IDEA解决一个类无法启动多个窗口的问题](https://blog.csdn.net/sinat_41905822/article/details/97813057)
+
+- 解决IDEA打开File目录时屏幕卡死问题
+
+IDEA会为每个项目创建一个缓存，清除掉对应的缓存即可重新初始化项目。
+
+> 由于没找到IDEA缓存具体存放位置，因此将整个IDEA配置删除，IDEA恢复。但之前的配置和插件也都被删除。
+C:\Users\lizhaoxuan\.IntelliJIdea2019.1\config

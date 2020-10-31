@@ -10,6 +10,9 @@
 - [sed](#sed)
 - [awk](#awk)
 - [Shell脚本实战](#Shell脚本实战)
+- [Linux常见问题](#cjwt)
+  - [Linux检测端口连通性的几种方式](#dkltx)
+  - [Linux软链接](#rlj)
 
 # <a id="Linux介绍">Linux基础介绍</a>
 
@@ -1750,3 +1753,101 @@ else
 fi
 ```
 
+# <a id="cjwt">Linux常见问题</a>
+
+### <a id="dkltx">Linux检测端口连通性的几种方式</a>
+
+- telnet
+
+telnet为用户提供了在本地计算机上完成远程主机工作的能力,因此可以通过telnet来测试端口的连通性,具体用法格式: `telnet ip port`
+
+**ip:**是测试主机的ip地址
+
+**port:**是端口,比如80
+
+> 如果远程主机没开启该端口，会一直提示尝试连接
+
+- ssh
+
+SSH 是目前较可靠,专为远程登录会话和其他网络服务提供安全性的协议,在linux上可以通过ssh命令来测试端口的连通性,具体用法格式如下:`ssh -v -p port username@ip `
+
+**-v** 调试模式(会打印日志).
+
+**-p** 指定端口
+
+**username:**远程主机的登录用户（可省略）
+
+**ip:**远程主机
+
+> 如果远程主机开通了相应的端口,会提示Connected established，如果没有开启该端口，会一直有debug日志，尝试连接
+
+- curl
+
+curl是利用URL语法在命令行方式下工作的开源文件传输工具。也可以用来测试端口的连通性,具体用法:`curl ip:port`
+
+**ip**:是测试主机的ip地址
+
+**port:**是端口,比如80
+
+> 如果远程主机开通了相应的端口,都会输出信息,如果没有开通相应的端口,则没有任何提示,需要CTRL+C断开。
+
+- wget
+
+wget是一个从网络上自动下载文件的自由工具**,支持通过HTTP、HTTPS、FTP三个最常见的TCP/IP协议下载**,并可以使用HTTP代理。wget名称的由来是**“World Wide Web”与“get”的结**合,它也可以用来测试端口的连通性具体用法:`wget ip:port`
+
+**ip:**是测试主机的ip地址
+
+**port:**是端口,比如80
+
+> 如果远程主机不存在端口则会一直提示连接主机。
+
+### <a id="rlj">Linux软链接</a>
+
+> 软链接本质上是一种引用操作，Linux中的软链接和Windows中的快捷方式差不多。
+
+- 创建软链接：ln -s [源文件/目录] [目标文件或目录]
+
+```shell
+# 将/opt/rocks/demo.war的引用指向/opt/rocks/repository/services/demo.war
+ln -s /opt/rocks/repository/services/demo.war /opt/rocks/demo.war
+```
+
+- 删除软链接：rm -rf 软链接名字
+
+```shell
+# 删除软链接
+rm -rf /opt/rocks/demo.war
+```
+
+- 修改软链接：ln -snf [新的源文件/目录] [目标文件或目录]
+
+```shell
+# 修改软链接
+ln -snf /opt/rocks/repository/services/demo2.war /opt/rocks/demo.war
+```
+
+- 软链接与硬链接
+
+软链接：和Windows的快捷方式作用一样。
+
+硬链接：等同于执行一个`cp -p`命令，将源文件复制一份并将文件的元信息也一并修改，同时保持后续更新，当源文件更新时，目标文件也会一起更新。
+
+- ln相关参数
+
+常用的参数：
+
+--help：帮助文档
+
+-b 删除，覆盖以前建立的链接
+
+-d 允许超级用户制作目录的硬链接
+
+-f 强制执行
+
+-i 交互模式，文件存在则提示用户是否覆盖
+
+-n 把符号链接视为一般目录
+
+-s 软链接(符号链接)
+
+-v 显示详细的处理过程

@@ -2,6 +2,7 @@
 - [Lombok实战](#sz)
 - [Lombok原理](#yl)
 - [Lombok优缺点](#yqd)
+- [Lombok导致的Bug](#bug)
 
 # <a id="jj">Lombok简介</a>
 
@@ -23,6 +24,7 @@ Lombok有以下常用注解：
 - @NonNull：在属性，方法，参数上使用，自动添加空值校验
 - @Cleanup：在局部变量上使用，自动调用变量的close方法(方法名可指定)
 - @Builder：在JavaBean中使用，自动生成构造者模式
+- @Accessors(chain = true)：在JavaBean中使用，可以让set方法链式调用
 - @Synchronized：在方法上使用，自动生成Synchronized锁
 - @SneakyThrows：在方法和构造器上使用，自动生成try/catch捕捉异常
 - @Slf4j：在需要打印日志的类中使用，当项目中使用了slf4j打印日志框架时使用该注解，会简化日志的打印流程，自动注入一个log对象
@@ -246,6 +248,134 @@ public class User {
             return "User.UserBuilder(id=" + this.id + ", userName=" + this.userName + ", password=" + this.password + ")";
         }
     }
+}
+```
+
+- @Accessors(chain = true)
+
+```java
+@Data
+@Accessors(chain = true)
+public class User {
+    
+    private Long id;
+    private String userName;
+    private String password;
+    
+}
+------------------------------------- 编译后 ----------------------------------------
+public class User {
+    private Long id;
+    private String userName;
+    private String password;
+
+    public User() {
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public User setId(final Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public User setUserName(final String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public User setPassword(final String password) {
+        this.password = password;
+        return this;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        } else if (!(o instanceof User)) {
+            return false;
+        } else {
+            User other = (User)o;
+            if (!other.canEqual(this)) {
+                return false;
+            } else {
+                label47: {
+                    Object this$id = this.getId();
+                    Object other$id = other.getId();
+                    if (this$id == null) {
+                        if (other$id == null) {
+                            break label47;
+                        }
+                    } else if (this$id.equals(other$id)) {
+                        break label47;
+                    }
+
+                    return false;
+                }
+
+                Object this$userName = this.getUserName();
+                Object other$userName = other.getUserName();
+                if (this$userName == null) {
+                    if (other$userName != null) {
+                        return false;
+                    }
+                } else if (!this$userName.equals(other$userName)) {
+                    return false;
+                }
+
+                Object this$password = this.getPassword();
+                Object other$password = other.getPassword();
+                if (this$password == null) {
+                    if (other$password != null) {
+                        return false;
+                    }
+                } else if (!this$password.equals(other$password)) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+    }
+
+    protected boolean canEqual(final Object other) {
+        return other instanceof User;
+    }
+
+    public int hashCode() {
+        int PRIME = true;
+        int result = 1;
+        Object $id = this.getId();
+        int result = result * 59 + ($id == null ? 43 : $id.hashCode());
+        Object $userName = this.getUserName();
+        result = result * 59 + ($userName == null ? 43 : $userName.hashCode());
+        Object $password = this.getPassword();
+        result = result * 59 + ($password == null ? 43 : $password.hashCode());
+        return result;
+    }
+
+    public String toString() {
+        return "User(id=" + this.getId() + ", userName=" + this.getUserName() + ", password=" + this.getPassword() + ")";
+    }
+}  
+-------------------------------------- Demo  -------------------------------------------
+public static void main(String[] args) {
+
+        User user = new User()
+                .setId(11L)
+                .setUserName("Rocks")
+                .setPassword("123456");
+
 }
 ```
 
@@ -506,3 +636,8 @@ Lombok本质上就是一个实现了“[JSR 269 API](https://www.jcp.org/en/jsr/
 
 - 降低代码可读性，难以调试
 - 代码侵入性度，强迫IDE安装插件
+
+# <a id="bug">Lombok导致的Bug</a>
+
+
+

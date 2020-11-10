@@ -13,6 +13,7 @@
 - [Linux常见问题](#cjwt)
   - [Linux检测端口连通性的几种方式](#dkltx)
   - [Linux软链接](#rlj)
+  - [Linux进程和端口常用命令](#jcdk)
 
 # <a id="Linux介绍">Linux基础介绍</a>
 
@@ -1851,3 +1852,42 @@ ln -snf /opt/rocks/repository/services/demo2.war /opt/rocks/demo.war
 -s 软链接(符号链接)
 
 -v 显示详细的处理过程
+
+### <a id="jcdk">Linux进程和端口常用命令</a>
+
+- 根据进程名查看进程信息，以查看tomcat进程名为例
+
+```shell
+ps -ef | grep tomcat  ==>  进程ID
+ps -aux | grep tomcat  ==>  进程占用内存
+```
+
+- 根据进程id查看进程占用端口，以查看ID为1095的进程为例
+
+```shell
+netstat -nap | grep 1095
+```
+
+- 根据端口查看对应进程，查看占用8080端口的进程id
+
+```shell
+netstat -tunlp | grep 8080
+```
+
+- 根据进程id查看进程信息，查看进程id为1095的进程信息
+
+```shell
+ps -ef | grep 1095
+```
+
+- 根据进程id杀死进程，杀死进程id为1095的进程
+
+```shell
+kill -9 1095
+```
+
+> 没有netstat命令，使用 yum -y install net-tools安装
+>
+> netstat命令常用参数：https://blog.csdn.net/weixin_43055250/article/details/88669501
+>
+> ps命令常用参数：https://blog.csdn.net/worldchinalee/article/details/84146118

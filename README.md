@@ -155,6 +155,7 @@
 - [x] [常见问题&解决方案汇总](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/常见问题&解决方案汇总.md)
 - [x] [分布式协议与算法](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/分布式协议与算法.md)
 - [ ] [面试题汇总](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/面试题汇总.md)
+- [ ] [Chrome常用插架](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/Chrome常用插架.md)
 
 
 ## 大数据

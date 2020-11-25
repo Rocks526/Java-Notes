@@ -159,7 +159,7 @@
 
 ## 大数据
 
+- [ ] [Scala](https://github.com/Rocks526/Java-Notes/blob/master/docs/大数据/Scala.md)
 - [ ] [Hadoop](https://github.com/Rocks526/Java-Notes/blob/master/docs/大数据/Hadoop.md)
 - [ ] [Spark](https://github.com/Rocks526/Java-Notes/blob/master/docs/大数据/Spark.md)
-
 - [ ] [Flink](https://github.com/Rocks526/Java-Notes/blob/master/docs/大数据/Flink.md)

@@ -151,3 +151,145 @@ jrunscript：Java命令行脚本外壳工具，主要用于解释执行JS，Groo
 
 #### 常用工具
 
+##### Jvm参数
+
+> https://blog.csdn.net/wang379275614/article/details/78471604
+>
+> https://www.cnblogs.com/xuwenjin/p/13092857.html
+
+Jvm的参数类型主要分三大类：标准参数，X参数和XX参数。
+
+- 标准参数：在Jdk版本中基本不变的参数，比较稳定
+
+-help：查看帮助信息
+
+-server  -client：选择Jvm按照Server/Client模式运行，默认是Server
+
+-version  -showversion：显示Java版本号
+
+-cp -classpath：设置Java的类搜索目录
+
+- X参数：非标准化参数，不同版本的Jdk可能不一致，但变化较少
+
+-Xint：解释执行
+
+-Xcomp：第一次使用就编译成本地代码
+
+-Xmixed：混合模式，Jvm自行决定是否编译(默认mixed模式)
+
+- XX参数：非标准化参数，相对不稳定，一般用于Jvm调优和debug
+
+-XX:[+-]\<name\>：表示启动或禁用name属性
+
+例如-XX:+UseConcMarkSweepGC表示启用CMS垃圾收集器，例如-XX:-UseG1GC表示禁用G1垃圾收集器。
+
+-XX:\<name\>=\<value\>表示name的属性的值为value
+
+例如-XX:MaxGCPauseMillis=500表示设置GC最大的停顿时间是500毫秒
+
+- 常用Jvm参数
+
+**-Xms：**JVM启动时申请的初始Heap值，默认为操作系统物理内存的1/64但小于1G。默认当空余堆内存大于70%时，JVM会减小heap的大小到-Xms指定的大小，可通过-XX:MaxHeapFreeRation=来指定这个比列。**Server端JVM最好将-Xms和-Xmx设为相同值，避免每次垃圾回收完成后JVM重新分配内存**
+
+**-Xmx：**JVM可申请的最大Heap值，默认值为物理内存的1/4但小于1G，默认当空余堆内存小于40%时，JVM会增大Heap到-Xmx指定的大小，可通过-XX:MinHeapFreeRation=来指定这个比列。最佳设值应该视物理内存大小及计算机内其他内存开销而定。
+
+**-Xmn：**Java Heap Young区大小。持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
+
+> 程序新创建的对象都是从年轻代分配内存，年轻代由Eden Space和两块相同大小的SurvivorSpace(通常又称S0和S1或From和To)构成，通过-Xmn参数来指定年轻代的大小，也可以通过-XX:SurvivorRation来调整Eden Space及SurvivorSpace的大小.
+>
+> 老年代用于存放经过多次新生代GC仍然存活的对象，例如缓存对象，新建的对象也有可能直接进入老年代，主要有两种情况：1、大对象，可通过启动参数设置**-XX:PretenureSizeThreshold=1024**(单位为字节，默认为0)来代表超过多大时就不在新生代分配，而是直接在老年代分配。2、大的数组对象，且数组中无引用外部对象。老年代所占的内存大小为-Xmx对应的值减去-Xmn对应的值。如果在堆中没有内存完成实例分配，并且堆也无法再扩展时，将会抛出OutOfMemoryError异常。
+
+**-Xss：**Java每个线程的Stack大小。JDK5.0以后每个线程堆栈大小为1M，以前每个线程堆栈大小为256K。根据应用的线程所需内存大小进行调整。**在相同物理内存下，减小这个值能生成更多的线程。**但是操作系统对一个进程内的线程数还是有限制的，不能无限生成，经验值在3000~5000左右。
+
+**-XX:PermSize：**持久代（方法区）的初始内存大小。
+
+**-XX:MaxPermSize：**持久代（方法区）的最大内存大小。
+
+**-XX:UseSerialGC：**串行（SerialGC）是jvm的默认GC方式，一般适用于小型应用和单处理器，算法比较简单，GC效率也较高，但**可能会给应用带来停顿**。
+
+**-XX:UseParallelGC：**并行（ParallelGC）是指多个线程并行执行GC，一般适用于多处理器系统中，可以提高GC的效率，但算法复杂，系统消耗较大。（配合使用：-XX:ParallelGCThreads=8，并行收集器的线程数，此值最好配置与处理器数目相等）
+
+**-XX:+UseParNewGC：**设置年轻代为并行收集
+
+**-XX:+UseParallelOldGC：**设置年老代为并行收集
+
+**-XX:+UseConcMarkSweepGC：**使用并发标记GC
+
+**-XX:+UseCMSCompactAtFullCollection：**在Full GC的时候，对老年代进行压缩整理。
+
+> 因为CMS是不会移动内存的，因此非常容易产生内存碎片。因此增加这个参数就可以在FullGC后对内存进行压缩整理，消除内存碎片。当然这个操作也有一定缺点，就是会增加CPU开销与GC时间，所以可以通过-XX:CMSFullGCsBeforeCompaction=3 这个参数来控制多少次Full GC以后进行一次碎片整理。
+
+**-XX:+CMSInitiatingOccupancyFraction=80：**代表老年代使用空间达到80%后，就进行Full GC
+
+**-XX:+MaxTenuringThreshold=10：**垃圾的最大年龄，代表对象在Survivor区经过10次复制以后才进入老年代。
+
+**-XX:+PrintFlagsInitial** ==>  查看参数的初始值(可能后来被修改)
+
+**-XX:+PrintFlagsFinal**  ==>  查看参数的最终值
+
+**-XX:+UnlockExperimentalVMOptions**  ==>  解锁实验参数
+
+> Jvm有的参数不能直接通过jinfo赋值，需要先解锁
+
+**-XX:+UnlockDiagnosticVMOptions**  ==>  解锁诊断参数
+
+**-XX:+PrintCommandLineFlags**  ==>  打印命令行参数
+
+----------------------
+
+##### jps：查看Java进程的ID
+
+可以列出正在运行的虚拟机进程，并显示虚拟机执行主类（Main Class，main()函数所在的类）名称以及这些进程的本地虚拟机唯一ID。
+
+![image-20201203185257000](http://rocks526.top/lzx/image-20201203185257000.png)
+
+> jps -l -q -m -v
+>
+> -l代表输出主类的全名，如果是JAR包，输出JAR包全路径
+>
+> -v输出JVM启动时参数
+>
+> -m输出启动时传递给main函数的参数
+>
+> -q只输出进程ID，忽略名字
+
+##### jinfo：查看Jvm运行时的参数信息，可以修改部分参数
+
+jinfo -flag 属性 进程ID  ==>  查询该进程对应的该属性的值
+
+![image-20201203185426205](http://rocks526.top/lzx/image-20201203185426205.png)
+
+jinfo -flags 进程ID  ==>  查询该进程启动时修改的值
+
+##### jstat：用于监视虚拟机各种运行状态信息
+
+
+
+
+
+
+
+##### jmap
+
+
+
+
+
+
+
+##### jstack
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

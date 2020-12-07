@@ -1,5 +1,5 @@
 - [IDEA常用插件](#cj)
-- [IDEA调试](#ts)
+- [IDEA其他问题](#ts)
 
 # <a id="cj">IDEA常用插件</a>
 
@@ -67,7 +67,11 @@
 
 > 修改背景图
 
-# <a id="ts">IDEA调试</a>
+- Scala
+ 
+ > IDEA开发Scala插件
+
+# <a id="ts">IDEA其他问题</a>
 
 [IDEA调试](https://www.cnblogs.com/yjd_hycf_space/p/7483471.html)
 

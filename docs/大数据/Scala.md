@@ -276,6 +276,8 @@ object Demo5 {
 
 Scala的if语句Java基本一致，如下所示：
 
+> Scala不支持三元表达式，只有和Python类似的单行if
+
 ```scala
 import scala.io.StdIn
 
@@ -292,6 +294,9 @@ object Demo1 {
     }else{
       println("成绩小于80")
     }
+    var res = 50
+    res = if (res > 60) res else 60
+    println(res)
   }
 
 }
@@ -401,21 +406,432 @@ Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
 ### while循环
 
+> while循环语法与Java基本一致。
+>
+> 由于while中没有返回值，所以当要用该语句来计算并返回结果时，就不可避免的使用变量，而变量需要声明在while循环的外部，那么就等同于循环的内部对外部的变量造成了影响，也就违背了函数式编程的重要思想（输入=>函数=>输出，不对外界造成影响），所以scala不推荐使用，而是推荐使用for循环。
 
+```scala
+object Demo3 {
+  def main(args: Array[String]): Unit = {
+    var i = 0
+    while (i < 10){
+      println(s"循环次数i=$i")
+      i = i + 1
+    }
+  }
+}
+```
 
+### do While循环
 
+> 与Java保持一致。
 
+```scala
+object Demo4 {
+  def main(args: Array[String]): Unit = {
+    var i = 0
+    do {
+      println(s"循环次数i = $i")
+      i = i + 1
+    }while(i < 10)
+  }
+}
+```
 
+### While循环中断
 
+> Scala内置控制结构特地去掉了break和continue，是为了更好的适应函数式编程，推荐使用函数式的风格解决break和continue的功能，而不是一个关键字。scala中使用breakable控制结构来实现break和continue功能。
+>
+> 注意breakable的导包
 
+```scala
+# 循环10次 当i=5时跳出循环
+object Demo5 {
+  def main(args: Array[String]): Unit = {
+    var i = 0
+    breakable {
+      while (i < 10){
+        println(s"i = $i")
+        i = i + 1
+        if (i == 5){
+          break()
+        }
+      }
+    }
+  }
+}
+
+# 当i=5时跳过
+import util.control.Breaks._
+
+object Demo6 {
+    def main(args: Array[String]): Unit = {
+        var i = 0
+        while (i < 10){
+            breakable {
+                i = i+ 1
+                if (i == 5){
+                    break()
+                } else {
+                    println(s"i = $i")
+                }
+            }
+        }
+    }
+}
+```
 
 # <a id="hss">函数式编程</a>
 
+### 函数的定义
 
+![image-20201207100059214](http://rocks526.top/lzx/image-20201207100059214.png)
 
+```scala
+object Demo1 {
+    
+    // 函数定义
+    def first_function(arg:String): Unit = {
+        println(s"传入的参数是:$arg")
+    }
+    
+    def main(args: Array[String]): Unit = {
+        // 函数可以定义在main方法内 ==> 支持嵌套定义
+        def second_function(arg:String): Unit = {
+            println(s"传入的参数是:$arg")
+        }
+        first_function("Hello World")
+        second_function("Hello World2")
+    }
+}
+```
 
+函数和方法的区别：
+
+- 为完成某一功能的程序指令（语句）的集合，称为函数。
+- 类中的函数称之方法。
+- 函数没有重载和重写的概念；方法可以进行重载和重写
+- scala中函数可以嵌套定义
+
+```scala
+object Demo2 {
+    def main(args: Array[String]): Unit = {
+        // 函数1：无参，无返回值
+        def test(): Unit ={
+            println("无参，无返回值")
+        }
+        test()
+    
+        // 函数2：无参，有返回值
+        def test2():String={
+            return "无参，有返回值"
+        }
+        println(test2())
+    
+        // 函数3：有参，无返回值
+        def test3(s:String):Unit={
+            println(s)
+        }
+        test3("demo")
+    
+        // 函数4：有参，有返回值
+        def test4(s:String):String={
+            return s+"有参，有返回值"
+        }
+        println(test4("hello "))
+    
+    
+        // 函数5：多参，无返回值
+        def test5(name:String, age:Int):Unit={
+            println(s"$name, $age")
+        }
+        test5("rocks",22)
+    }
+}
+```
+
+### 函数的参数
+
+- Scala支持可变参数
+- 如果参数列表中存在多个参数，那么可变参数一般放置在最后
+- Scala的函数参数支持默认值
+- Scala的函数支持带名参数
+
+```scala
+object Demo3 {
+    def main(args: Array[String]): Unit = {
+        // （1）可变参数
+        def test( s : String* ): Unit = {
+            println(s)
+        }
+    
+        // 有输入参数：输出 Array
+        test("Hello", "Scala")
+    
+        // 无输入参数：输出List()
+        test()
+    
+        // (2)如果参数列表中存在多个参数，那么可变参数一般放置在最后
+        def test2( name : String, s: String* ): Unit = {
+            println(name + "," + s)
+        }
+        /*
+        可变参数一般放置在最后
+        def test2( s: String*,name : String ): Unit = {
+            println(name + "," + s)
+        }
+        */
+        test2("Rocks", "demo")
+    
+        // (3)参数默认值
+        def test3( name : String, age : Int = 30 ): Unit = {
+            println(s"$name, $age")
+        }
+    
+        // 如果参数传递了值，那么会覆盖默认值
+        test3("Rocks", 20)
+    
+        // 如果参数有默认值，在调用的时候，可以省略这个参数
+        test3("Rocks")
+    
+    
+        def test4( sex : String = "男", name : String ): Unit = {
+            println(s"$name, $sex")
+        }
+    
+        // scala函数中参数传递是，从左到右
+        // 一般情况下，将有默认值的参数放置在参数列表的后面
+        //        test4("Rocks")
+    
+        //（4）带名参数
+        test4(name="Rocks")
+    }
+}
+```
+
+### 函数简化
+
+- return可以省略，Scala会使用函数体的最后一行代码作为返回值
+- 返回值类型如果能够推断出来，那么可以省略
+- 如果函数体只有一行代码，可以省略花括号
+- 如果函数无参，则可以省略小括号。若定义函数时省略小括号，则调用该函数时，也需省略小括号；若定时函数时未省略，则调用时，可省可不省。
+- 如果函数明确声明Unit，那么即使函数体中使用return关键字也不起作用
+- Scala如果想要自动推断无返回值，可以省略等号
+- 如果不关心名称，只关系逻辑处理，那么函数名（def）可以省略
+- 如果函数明确使用return关键字，那么函数返回就不能使用自行推断了，需要声明返回值类型
+
+```scala
+// 函数简化
+object Demo4 {
+    def main(args: Array[String]): Unit = {
+        // 0）函数标准写法
+        def f1( s : String ): String = {
+            return s + " Rocks"
+        }
+        println(f1("Hello"))
+    
+        // 至简原则:能省则省
+    
+        //（1） return可以省略,scala会使用函数体的最后一行代码作为返回值
+        def f2( s : String ): String = {
+            s + " Rocks"
+        }
+        println(f2("Hello"))
+    
+        // 如果函数名使用return关键字，那么函数就不能使用自行推断了,需要声明返回值类型
+        /*
+        def f22(s:String)={
+            return "jinlian"
+        }
+        */
+    
+        //（2）返回值类型如果能够推断出来，那么可以省略
+        def f3( s : String ) = {
+            s + " Rocks"
+        }
+    
+        println(f3("Hello"))
+    
+        //（3）如果函数体只有一行代码，可以省略花括号
+        //def f4(s:String) = s + " Rocks"
+        //def f4(s:String) = "Rocks"
+        def f4() = " Rocks"
+    
+        // 如果函数无参，但是声明参数列表，那么调用时，小括号，可加可不加。
+        println(f4())
+        println(f4)
+    
+        //（4）如果函数没有参数列表，那么小括号可以省略,调用时小括号必须省略
+        def f5 = "Rocks"
+        // val f5 = "Rocks"
+    
+        println(f5)
+    
+        //（5）如果函数明确声明unit，那么即使函数体中使用return关键字也不起作用
+        def f6(): Unit = {
+            return "abc"
+        }
+        println(f6())
+    
+        //（6）scala如果想要自动推断无返回值,可以省略等号
+        // 将无返回值的函数称之为过程
+        def f7(): Unit = {
+            "Rocks"
+        }
+        println(f7())
+    
+        //（7）如果不关心名称，只关系逻辑处理，那么函数名（def）可以省略
+        //()->{println("xxxxx")}
+        val f = (x:String)=>{"Rocks"}
+    
+        // 万物皆函数 : 变量也可以是函数
+        println(f("Rocks"))
+    
+        //（8）如果函数明确使用return关键字，那么函数返回就不能使用自行推断了,需要声明返回值类型
+        def f8() :String = {
+            return "Rocks"
+        }
+        println(f8())
+    }
+}
+```
+
+### 高阶函数
+
+> 在Scala中，将参数为函数的函数称为高阶函数
+
+```scala
+// 高阶函数
+object Demo5 {
+    def main(args: Array[String]): Unit = {
+        //高阶函数————函数作为参数
+        def calculator(a: Int, b: Int, operator: (Int, Int) => Int): Int = {
+            operator(a, b)
+        }
+    
+        //函数————求和
+        def plus(x: Int, y: Int): Int = {
+            x + y
+        }
+    
+        //方法————求积
+        def multiply(x: Int, y: Int): Int = {
+            x * y
+        }
+    
+        //函数作为参数
+        println(calculator(2, 3, plus))
+        println(calculator(2, 3, multiply))
+    }
+}
+```
+
+### 匿名函数
+
+> 没有名字的函数就是匿名函数，可以直接通过**函数字面量（**                                **表达式）**来设置匿名函数，函数字面量定义格式如下。
+
+![image-20201207103233937](http://rocks526.top/lzx/image-20201207103233937.png)
+
+```scala
+// 匿名函数
+object Demo6 {
+    //高阶函数————函数作为参数
+    def calculator(a: Int, b: Int, operator: (Int, Int) => Int): Int = {
+        operator(a, b)
+    }
+    
+    //函数————求和
+    def plus(x: Int, y: Int): Int = {
+        x + y
+    }
+    
+    def main(args: Array[String]): Unit = {
+        
+        //函数作为参数
+        println(calculator(2, 3, plus))
+        
+        //匿名函数作为参数
+        println(calculator(2, 3, (x: Int, y: Int) => y - x))
+        
+        //匿名函数简写形式
+        println(calculator(2, 3, _ - _))
+    }
+}
+```
+
+### 函数柯里化和闭包
+
+> 函数柯里化：将一个接收多个参数的函数转化成一个接受一个参数的函数过程，可以简单的理解为一种特殊的参数列表声明方式。
+>
+> 闭包：就是**一个函数**和与**其相关的引用环境（变量）**组合的一个**整体**(实体)
+
+```scala
+object Demo7 {
+    
+    val sum = (x: Int, y: Int, z: Int) => x + y + z
+    
+    val sum1 = (x: Int) => {
+        y: Int => {
+            z: Int => {
+                x + y + z
+            }
+        }
+    }
+    
+    val sum2 = (x: Int) => (y: Int) => (z: Int) => x + y + z
+    
+    def sum3(x: Int)(y: Int)(z: Int) = x + y + z
+    
+    def main(args: Array[String]): Unit = {
+        // 外部变量
+        var x: Int = 10
+    
+        // 闭包
+        def f(x: Int, y: Int): Int = {
+            x + y
+        }
+        // 匿名函数
+        sum(1, 2, 3)
+        sum1(1)(2)(3)
+        sum2(1)(2)(3)
+        sum3(1)(2)(3)
+    }
+}
+```
+
+### 惰性函数
+
+> 当**函数返回值被声明为lazy时**，函数的**执行将被推迟**，直到我们**首次对此取值，该函数才会执行**。这种函数我们称之为惰性函数。
+
+```scala
+object Demo8 {
+    
+    def main(args: Array[String]): Unit = {
+        
+        lazy val res = sum(10, 30)
+        println("----------------")
+        println("res=" + res)
+    }
+    
+    def sum(n1: Int, n2: Int): Int = {
+        println("sum被执行。。。")
+        return n1 + n2
+    }
+    
+}
+=========================================================
+----------------
+sum被执行。。。
+res=40
+```
 
 # <a id="mxdx">面向对象</a>
+
+
+
+
+
+
 
 
 

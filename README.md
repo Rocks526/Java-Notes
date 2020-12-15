@@ -43,7 +43,6 @@
 - [ ] [数据库概论](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/数据库概论.md)
 - [ ] [MySQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MySQL.md)
 - [ ] [PostgreSQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/PostgreSQL.md)
-- [x] [Redis](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/Redis.md)
 - [ ] [MongoDB](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MongoDB.md)
 - [ ] [Neo4j](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/Neo4j.md)
 - [ ] [TiDB](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/TiDB.md)
@@ -56,6 +55,7 @@
 - [ ] [缓存体系介绍](https://github.com/Rocks526/Java-Notes/blob/master/docs/缓存/缓存体系介绍.md)
 - [ ] [EhCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/EhCache.md)
 - [ ] [GuavaCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/GuavaCache.md)
+- [x] [Redis](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/Redis.md)
 - [ ] [MemCached](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MemCached.md)
 
 ## 常用工具包
@@ -93,7 +93,7 @@
 - [ ] [Dubbo](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Dubbo.md)
 - [ ] [ZooKeeper](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/ZooKeeper.md)
 - [ ] [Eureka](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Eureka.md)
-- [ ] [etcd](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/etcd.md)
+- [ ] [Etcd](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/etcd.md)
 - [ ] [Netty](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Netty.md)
 - [ ] [Apoll](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Apoll.md)
 
@@ -115,7 +115,7 @@
 - [x] [常见问题&解决方案汇总](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/常见问题&解决方案汇总.md)
 - [x] [分布式协议与算法](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/分布式协议与算法.md)
 - [ ] [面试题汇总](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/面试题汇总.md)
-- [ ] [Chrome常用插架](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/Chrome常用插架.md)
+- [x] [Chrome常用插架](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/Chrome常用插架.md)
 
 
 ## 大数据

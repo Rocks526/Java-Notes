@@ -15,17 +15,17 @@
 
 ## Java语言
 
+- [x] [Jdk各版本新特性](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Jdk各版本新特性.md)
 - [x] [Jdk源码](https://github.com/Rocks526/Jdk8-Notes)
-- [ ] [Java并发编程](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java并发编程.md)
+- [x] [Java并发编程](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java并发编程.md)
 - [x] [Java反射](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java反射.md)
 - [x] [Java注解](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java注解.md)
-- [ ] [Java泛型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java泛型.md)
-- [ ] [Java日期](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java日期.md)
+- [x] [Java泛型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java泛型.md)
+- [x] [Java日期](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java日期.md)
 - [ ] [Jdk动态代理](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Jdk动态代理.md)
-- [ ] [Lambda表达式](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Lambda.md)
+- [x] [Lambda表达式](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Lambda.md)
 - [x] [JavaNIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/JavaNIO.md)
 - [ ] [Java堆外内存](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java堆外内存.md)
-- [ ] [Java线程池](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java线程池.md)
 - [x] [Java虚拟机](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机.md)
 
 ## Web
@@ -95,7 +95,7 @@
 - [ ] [Eureka](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Eureka.md)
 - [ ] [Etcd](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/etcd.md)
 - [ ] [Netty](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Netty.md)
-- [ ] [Apoll](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Apoll.md)
+- [ ] [Apollo](https://github.com/Rocks526/Java-Notes/blob/master/docs/RPC/Apoll.md)
 
 ## 开发 & 运维 & 测试工具
 
@@ -103,7 +103,7 @@
 - [x] [Docker](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Docker.md)
 - [ ] [Git](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Git.md)
 - [ ] [Maven](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Maven.md)
-- [ ] [Jekins](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Jekins.md)
+- [ ] [Jenkins](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Jekins.md)
 - [ ] [Postman](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Postman.md)
 - [ ] [JMeter](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/JMeter.md)
 - [ ] [LoadRunner](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/LoadRunner.md)

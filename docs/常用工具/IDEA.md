@@ -3,6 +3,10 @@
 
 # <a id="cj">IDEA常用插件</a>
 
+- Docker
+
+>  IDEA对Docker的支持，自动识别Dockerfile文件，自动补全等
+
 - lombok
 
 >  自动生成set/get/toString/Construct等

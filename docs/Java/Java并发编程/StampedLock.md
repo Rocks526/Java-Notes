@@ -193,5 +193,6 @@ void moveIfAtOrigin(double newX, double newY){
 - StampedLock 不支持重入。
 - StampedLock 的悲观读锁、写锁都不支持条件变量。
 - 如果线程阻塞在 StampedLock 的 readLock() 或者 writeLock() 上时，此时调用该阻塞线程的 interrupt() 方法，会导致 CPU 飙升。
+- 使用 StampedLock 一定不要调用中断操作，如果需要支持中断功能，一定使用可中断的悲观读锁 readLockInterruptibly() 和写锁 writeLockInterruptibly()
 - StampedLock 的锁升级和降级要注意stamp的更新
 

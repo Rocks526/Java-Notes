@@ -36,7 +36,7 @@
 - [ ] [Servlet](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Servlet.md)
 - [ ] [Tomcat](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Tomcat.md)
 - [ ] [Nginx](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Nginx.md)
-- [ ] [Vue](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Vue.md)
+- [ ] [前端](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/前端.md)
 
 ## 存储
 

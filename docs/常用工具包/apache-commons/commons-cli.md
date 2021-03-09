@@ -12,6 +12,16 @@ Commons Cli将命令行参数解析分为三个阶段：
 
 # 二：commons-cli常用API
 
+- Maven依赖
+
+```xml
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.4</version>
+        </dependency>
+```
+
 - 以往kafka的topic发送日志样本为例，解析输入的参数：
 
 ```java

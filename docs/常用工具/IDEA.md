@@ -11,6 +11,10 @@
 
 >  自动生成set/get/toString/Construct等
 
+- Alibaba Java Coding Guidelines
+
+>  阿里Java编码规范
+
 - Maven Helper
 
 >  Maven依赖分析

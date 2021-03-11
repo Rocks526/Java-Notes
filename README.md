@@ -58,7 +58,7 @@
 - [x] [Redis](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/Redis.md)
 - [ ] [MemCached](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MemCached.md)
 
-## 常用工具包
+## Java工具包
 
 - [ ] [Apache Commons工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons工具包.md)
 - [ ] [Json解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Json解析工具包.md)
@@ -100,6 +100,7 @@
 
 ## 开发 & 运维 & 测试工具
 
+- [x] [Typora](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Typora.md)
 - [x] [IDEA](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/IDEA.md)
 - [x] [Docker](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Docker.md)
 - [ ] [Git](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Git.md)

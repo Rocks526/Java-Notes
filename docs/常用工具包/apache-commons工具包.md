@@ -47,3 +47,11 @@ Apache Commons是apache开源的一个非常有用的Java工具包，解决各�
 [commons-compress](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons/commons-compress.md)
 
 [commons-lang3](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons/commons-lang3.md)
+
+[commons-io](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons/commons-io.md)
+
+[commons-codec](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons/commons-codec.md)
+
+[commons-collections](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons/commons-collections.md)
+
+[commons-beanUtils](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons/commons-beanUtils.md)

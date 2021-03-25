@@ -27,6 +27,7 @@
 - [x] [JavaNIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/JavaNIO.md)
 - [ ] [Java堆外内存](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java堆外内存.md)
 - [x] [Java虚拟机](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机.md)
+- [ ] [Java定时任务](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java定时任务.md)
 
 ## Web
 
@@ -80,7 +81,6 @@
 - [ ] [SpringDataJPA](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/SpringDataJPA.md)
 - [ ] [SpringCloud](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/SpringCloud.md)
 - [ ] [Shiro](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Shiro.md)
-- [ ] [Quartz](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Quartz.md)
 
 ## MQ
 

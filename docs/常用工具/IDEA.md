@@ -1,7 +1,52 @@
-- [IDEA常用插件](#cj)
-- [IDEA其他问题](#ts)
+# <a id="cj">一：IDEA常用插件</a>
 
-# <a id="cj">IDEA常用插件</a>
+### 1.1 推荐插件
+
+- Codota
+
+> 根据代码上下文信息，自动推断接下来要输入的代码并自动补全。
+>
+> 对Jdk、Spring等常用的类有API推荐，自动感知使用最多的API。
+
+- Alibaba Java Coding Guidelines
+
+>  阿里Java编码规范
+
+- RestfulToolkit
+
+> 全局搜索请求URL，根据RestURL定位代码
+>
+> 快捷键：Alt + 反斜杠
+
+- Maven Helper
+
+>  Maven依赖分析，生成依赖树
+
+- Lombok
+
+> 利用Java的编译时注解动态修改编译结果，自动生成get/set/builder/构造器等
+
+- Free Mybatis Plugin / MybatisCodeHelperPro
+
+> 关联接口和XML文件，相互跳转
+
+- Translation
+
+> 翻译插件
+
+- Rainbow Brackets
+
+> 彩色括号
+
+- SonarLinter
+
+> Sonar代码扫描
+
+### 1.2 其他插件
+
+- Alibaba Cloud Toolkit
+
+> 快速部署项目到服务器
 
 - Docker
 
@@ -10,20 +55,6 @@
 - lombok
 
 >  自动生成set/get/toString/Construct等
-
-- Alibaba Java Coding Guidelines
-
->  阿里Java编码规范
-
-- Maven Helper
-
->  Maven依赖分析
-
-- RestfulToolkit
-
-> 根据RestURL定位代码
->
-> 快捷键：Alt + 反斜杠
 
 - leetcode editor
 
@@ -41,16 +72,6 @@
 >
 > 快捷键Alt + S
 
-- Codota
-
-> API使用介绍、示例
->
-> 选中方法右键
-
-- Free Mybatis Plugin
-
-> 关联接口和XML文件，相互跳转
-
 - Properties to YAML Converter
 
 > properties配置文件一键转YAML
@@ -58,10 +79,6 @@
 - CodeGlance
 
 > 代码编辑器迷你视图
-
-- Rainbow Brackets
-
-> 彩色括号
 
 - Solarized Themes
 
@@ -76,10 +93,10 @@
 > 修改背景图
 
 - Scala
- 
+
  > IDEA开发Scala插件
 
-# <a id="ts">IDEA其他问题</a>
+# <a id="ts">二：IDEA其他问题</a>
 
 [IDEA调试](https://www.cnblogs.com/yjd_hycf_space/p/7483471.html)
 

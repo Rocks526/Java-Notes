@@ -5,13 +5,8 @@
 - [ ] [操作系统](https://github.com/Rocks526/Java-Notes/blob/master/docs/cs/操作系统.md)
 - [ ] [计算机网络](https://github.com/Rocks526/Java-Notes/blob/master/docs/cs/计算机网络.md)
 - [ ] [计算机组成原理](https://github.com/Rocks526/Java-Notes/blob/master/docs/cs/计算机组成原理.md)
+- [ ] [数据结构与算法](https://github.com/Rocks526/Java-Notes/blob/master/docs/cs/数据结构与算法.md)
 - [ ] [设计模式](https://github.com/Rocks526/Java-Notes/blob/master/docs/cs/设计模式.md)
-
-## 算法
-
-- [ ] [数据结构与算法](https://github.com/Rocks526/Java-Notes/blob/master/docs/算法/数据结构与算法.md)
-- [ ] [剑指offer题解](https://github.com/Rocks526/Java-Notes/blob/master/docs/算法/剑指offer题解.md)
-- [ ] [LeetCode题解](https://github.com/Rocks526/Java-Notes/blob/master/docs/算法/LeetCode题解.md)
 
 ## Java语言
 

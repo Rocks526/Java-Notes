@@ -26,9 +26,13 @@
 
 > 利用Java的编译时注解动态修改编译结果，自动生成get/set/builder/构造器等
 
-- Free Mybatis Plugin / MybatisCodeHelperPro
+- Free Mybatis Plugin / MybatisCodeHelperPro / MybatisX
 
 > 关联接口和XML文件，相互跳转
+
+- MybatisLog
+
+> 格式化Mybatis的SQL日志，填充参数等
 
 - Translation
 
@@ -51,10 +55,6 @@
 - Docker
 
 >  IDEA对Docker的支持，自动识别Dockerfile文件，自动补全等
-
-- lombok
-
->  自动生成set/get/toString/Construct等
 
 - leetcode editor
 

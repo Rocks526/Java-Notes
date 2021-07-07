@@ -58,7 +58,9 @@
 
 - [x] [Apache Commons工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons工具包.md)
 - [ ] [Json解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Json解析工具包.md)
-- [ ] [XML解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/XML解析工具包.md)
+- [ ] [Xml解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/XML解析工具包.md)
+- [x] [Yml解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Yml解析工具包.md)
+- [ ] [Properties解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Properties解析工具包.md)
 - [ ] [Guava](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Guava.md)
 - [x] [Lombok](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Lombok.md)
 - [ ] [Log日志包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Log日志包.md)

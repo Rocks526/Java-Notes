@@ -309,7 +309,7 @@ public class Test {
 
 - 动态代理输出
 
-![image-20210817172323565](C:\Users\lizhaoxuan\AppData\Roaming\Typora\typora-user-images\image-20210817172323565.png)
+![image-20210817172323565](http://rocks526.top/lzx/image-20210817172323565.png)
 
 > - invokeHandler处理器里的第一个proxy参数是代理对象的实例，在多层代理时会使用到。
 > - 接口可以不需要实现类，实现逻辑放在invokeHandler里，类似于Mybatis的Mapper接口增强。

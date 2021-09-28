@@ -8,13 +8,13 @@
 
 - [x] [动态SQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/04-动态SQL.md)
 
-- [ ] [代码生成器](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/05-代码生成器.md)
+- [x] [代码生成器](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/05-代码生成器.md)
 
-- [ ] [高级查询](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/06-高级查询.md)
+- [x] [高级查询](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/06-高级查询.md)
 
-- [ ] [缓存](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/07-缓存配置.md)
+- [x] [缓存](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/07-缓存配置.md)
 
-- [ ] [插件](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/08-插件.md)
+- [x] [插件](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/08-插件.md)
 
 - [ ] [Spring集成](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/09-Spring集成.md)
 
@@ -87,17 +87,31 @@
 # 三：Mybatis-Plus
 
 - [ ] [快速入门](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/快速入门.md)
+
 - [ ] [代码生成器](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/代码生成器.md)
+
 - [ ] [CRUD接口](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/CRUD接口.md)
+
 - [ ] [条件构造器](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/条件构造器.md)
+
 - [ ] [分页插件](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/分页插件.md)
+
 - [ ] [Sequence主键](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/Sequence主键.md)
+
 - [ ] [自定义ID生成器](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/自定义ID生成器.md)
+
 - [ ] [逻辑删除](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/逻辑删除.md)
+
 - [ ] [通用枚举](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/通用枚举.md)
+
 - [ ] [字段类型处理器](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/字段类型处理器.md)
+
 - [ ] [自动填充功能](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/自动填充功能.md)
+
 - [ ] [SQL打印分析](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/SQL打印分析.md)
+
 - [ ] [数据安全保护](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/数据安全保护.md)
+
 - [ ] [乐观锁](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis-plus/乐观锁.md)
+
 

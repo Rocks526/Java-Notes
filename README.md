@@ -49,16 +49,16 @@
 ## 缓存
 
 - [ ] [缓存体系介绍](https://github.com/Rocks526/Java-Notes/blob/master/docs/缓存/缓存体系介绍.md)
-- [ ] [EhCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/EhCache.md)
-- [ ] [GuavaCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/GuavaCache.md)
-- [x] [Redis](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/Redis.md)
-- [ ] [MemCached](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MemCached.md)
+- [ ] [EhCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/缓存/EhCache.md)
+- [ ] [GuavaCache](https://github.com/Rocks526/Java-Notes/blob/master/docs/缓存/GuavaCache.md)
+- [x] [Redis](https://github.com/Rocks526/Java-Notes/blob/master/docs/缓存/Redis.md)
+- [ ] [MemCached](https://github.com/Rocks526/Java-Notes/blob/master/docs/缓存/MemCached.md)
 
 ## Java工具包
 
 - [x] [Apache Commons工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/apache-commons工具包.md)
 - [ ] [Json解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Json解析工具包.md)
-- [ ] [Xml解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/XML解析工具包.md)
+- [x] [Xml解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/XML解析工具包.md)
 - [x] [Yml解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Yml解析工具包.md)
 - [ ] [Properties解析工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Properties解析工具包.md)
 - [ ] [Guava](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Guava.md)
@@ -77,7 +77,7 @@
 - [ ] [SpringBoot](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/SpringBoot.md)
 - [ ] [SpringDataJPA](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/SpringDataJPA.md)
 - [ ] [SpringCloud](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/SpringCloud.md)
-- [ ] [Shiro](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Shiro.md)
+- [ ] [Shiro&&SpringSecurity](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Shiro&&SpringSecurity.md)
 
 ## MQ
 
@@ -107,6 +107,7 @@
 - [ ] [JMeter](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/JMeter.md)
 - [ ] [LoadRunner](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/LoadRunner.md)
 - [ ] [Zabbix](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Zabbix.md)
+- [ ] [Prometheus](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Prometheus.md)
 
 
 ## 其他

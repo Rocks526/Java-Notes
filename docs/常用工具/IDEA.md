@@ -2,6 +2,14 @@
 
 ### 1.1 推荐插件
 
+- Java Stream Debugger
+
+> Debug时自动生成Stream流式处理每一步的数据。
+
+- Stack trace to UML
+
+> 根据JVM异常堆栈画UML时序图和通信图。
+
 - Codota
 
 > 根据代码上下文信息，自动推断接下来要输入的代码并自动补全。

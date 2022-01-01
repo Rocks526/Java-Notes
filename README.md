@@ -66,8 +66,8 @@
 - [x] [Lombok](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Lombok.md)
 - [ ] [Log日志包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Log日志包.md)
 - [ ] [Http工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Http工具包.md)
-- [ ] [Excel工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Excel工具包.md)
-- [ ] [单元测试工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/UnitTest工具包.md)
+- [x] [Excel工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/Excel工具包.md)
+- [x] [单元测试工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具包/单元测试工具包.md)
 
 ## 常用框架
 

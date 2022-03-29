@@ -38,6 +38,7 @@
 ## 存储
 
 - [ ] [数据库概论](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/数据库概论.md)
+- [x] [SQL快速入门](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/SQL快速入门.md)
 - [ ] [MySQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MySQL.md)
 - [ ] [PostgreSQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/PostgreSQL.md)
 - [ ] [MongoDB](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MongoDB.md)

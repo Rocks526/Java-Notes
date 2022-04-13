@@ -37,9 +37,10 @@
 
 ## 存储
 
-- [ ] [数据库概论](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/数据库概论.md)
 - [x] [SQL快速入门](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/SQL快速入门.md)
-- [ ] [MySQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MySQL.md)
+- [x] [MySQL快速入门](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MySQL快速入门.md)
+- [ ] [MySQL案例分析](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MySQL案例分析.md)
+- [ ] [分库分表](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/分库分表.md)
 - [ ] [PostgreSQL](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/PostgreSQL.md)
 - [ ] [MongoDB](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/MongoDB.md)
 - [ ] [Neo4j](https://github.com/Rocks526/Java-Notes/blob/master/docs/存储/Neo4j.md)

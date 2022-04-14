@@ -189,39 +189,79 @@ Jvm的参数类型主要分三大类：标准参数，X参数和XX参数。
 
 - 常用Jvm参数
 
-**-Xms：**JVM启动时申请的初始Heap值，默认为操作系统物理内存的1/64但小于1G。默认当空余堆内存大于70%时，JVM会减小heap的大小到-Xms指定的大小，可通过-XX:MaxHeapFreeRation=来指定这个比列。**Server端JVM最好将-Xms和-Xmx设为相同值，避免每次垃圾回收完成后JVM重新分配内存**
+**-Xms：** JVM启动时申请的初始Heap值，默认为操作系统物理内存的1/64但小于1G。默认当空余堆内存大于70%时，JVM会减小heap的大小到-Xms指定的大小，可通过-XX:MaxHeapFreeRation=来指定这个比列。**Server端JVM最好将-Xms和-Xmx设为相同值，避免每次垃圾回收完成后JVM重新分配内存**。
 
-**-Xmx：**JVM可申请的最大Heap值，默认值为物理内存的1/4但小于1G，默认当空余堆内存小于40%时，JVM会增大Heap到-Xmx指定的大小，可通过-XX:MinHeapFreeRation=来指定这个比列。最佳设值应该视物理内存大小及计算机内其他内存开销而定。
+**-Xmx：** JVM可申请的最大Heap值，默认值为物理内存的1/4但小于1G，默认当空余堆内存小于40%时，JVM会增大Heap到-Xmx指定的大小，可通过-XX:MinHeapFreeRation=来指定这个比列。最佳设值应该视物理内存大小及计算机内其他内存开销而定。
 
 **-Xmn：**Java Heap Young区大小。持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
 
-> 程序新创建的对象都是从年轻代分配内存，年轻代由Eden Space和两块相同大小的SurvivorSpace(通常又称S0和S1或From和To)构成，通过-Xmn参数来指定年轻代的大小，也可以通过-XX:SurvivorRation来调整Eden Space及SurvivorSpace的大小.
->
-> 老年代用于存放经过多次新生代GC仍然存活的对象，例如缓存对象，新建的对象也有可能直接进入老年代，主要有两种情况：1、大对象，可通过启动参数设置**-XX:PretenureSizeThreshold=1024**(单位为字节，默认为0)来代表超过多大时就不在新生代分配，而是直接在老年代分配。2、大的数组对象，且数组中无引用外部对象。老年代所占的内存大小为-Xmx对应的值减去-Xmn对应的值。如果在堆中没有内存完成实例分配，并且堆也无法再扩展时，将会抛出OutOfMemoryError异常。
+**-XX:PretenureSizeThreshold：**大对象的阈值，大于此值的对象直接分配到老年代。
 
 **-Xss：**Java每个线程的Stack大小。JDK5.0以后每个线程堆栈大小为1M，以前每个线程堆栈大小为256K。根据应用的线程所需内存大小进行调整。**在相同物理内存下，减小这个值能生成更多的线程。**但是操作系统对一个进程内的线程数还是有限制的，不能无限生成，经验值在3000~5000左右。
 
-**-XX:PermSize：**持久代（方法区）的初始内存大小。
+**-XX:PermSize：**永久代（方法区）的初始内存大小。
 
-**-XX:MaxPermSize：**持久代（方法区）的最大内存大小。
+**-XX:MaxPermSize：**永久代（方法区）的最大内存大小。
 
-**-XX:UseSerialGC：**串行（SerialGC）是jvm的默认GC方式，一般适用于小型应用和单处理器，算法比较简单，GC效率也较高，但**可能会给应用带来停顿**。
+**-XX:MetaspaceSize：**元空间初始化大小。
 
-**-XX:UseParallelGC：**并行（ParallelGC）是指多个线程并行执行GC，一般适用于多处理器系统中，可以提高GC的效率，但算法复杂，系统消耗较大。（配合使用：-XX:ParallelGCThreads=8，并行收集器的线程数，此值最好配置与处理器数目相等）
+**-XX:MaxMetaspaceSize：**元空间最大大小。(Jdk8之后，永久代改名元空间)
 
-**-XX:+UseParNewGC：**设置年轻代为并行收集
+**-XX:+UseCompressedClassesPointers：**开启类引用压缩。
 
-**-XX:+UseParallelOldGC：**设置年老代为并行收集
+**-XX:+UseCompressedOops：**开启对象引用压缩。
 
-**-XX:+UseConcMarkSweepGC：**使用并发标记GC
+**-XX:CompressedClassSpaceSize：**存放以上两个指针的地方。
 
-**-XX:+UseCMSCompactAtFullCollection：**在Full GC的时候，对老年代进行压缩整理。
+**-XX:InitialCodeCacheSize：**调整JIT的编译缓存大小，一般不同调整。
 
-> 因为CMS是不会移动内存的，因此非常容易产生内存碎片。因此增加这个参数就可以在FullGC后对内存进行压缩整理，消除内存碎片。当然这个操作也有一定缺点，就是会增加CPU开销与GC时间，所以可以通过-XX:CMSFullGCsBeforeCompaction=3 这个参数来控制多少次Full GC以后进行一次碎片整理。
+**-XX:ReservedCodeCacheSize：**调整JIT的编译缓存大小，一般不同调整。
 
-**-XX:+CMSInitiatingOccupancyFraction=80：**代表老年代使用空间达到80%后，就进行Full GC
+**-XX:-OmitStackTraceInFastThrow：**JIT编译优化，会将频繁出现的异常不打印堆栈信息，此参数可禁止这个优化。
 
-**-XX:+MaxTenuringThreshold=10：**垃圾的最大年龄，代表对象在Survivor区经过10次复制以后才进入老年代。
+**-XX:+HeapDumpOnOutOfMemoryError：**OOM时自动备份堆快照。
+
+**-XX:HeapDumpPath：**堆快照的备份路径。
+
+**-XX:OnOutOfMemoryError：**参数值是一个shell脚本，当内存溢出时，可以调用此shell脚本，脚本里可以优雅关闭或重启。
+
+**-XX:-UseLargePages：**禁止大内存页。
+
+>  -XX:LargePageSizeInBytes：如果开启大内存页，可以通过此参数指定大小。
+
+**-Xloggc：**GC输出日志路径。
+
+**-verbose:gc**：GC时将GC信息输出。
+
+**-XX:+PrintGCDetails：**输出GC的详细信息。
+
+**-XX:+PrintGCDateStamps：**输出GC的日期信息，默认输出格式是距离启动多长时间。
+
+**-XX:+PrintGCTimeStamps：**输出GC的时间信息。
+
+**-XX:+UseGCLogFileRotation：**开启GC日志文件轮转，即当日志文件大小到达指定大小时，开始写入下一个文件。
+
+**-XX:NumberOfGCLogFiles=10：**一共可以写入10个文件。
+
+**-XX:GCLogFileSize=100M：**每个文件最大100M。
+
+> 需要注意，如果所有文件全部存满时，会删除旧的日志文件，写入新的gc日志。
+
+**-XX:UseSerialGC：**年轻代使用Serial垃圾收集器。
+
+**-XX:UseParallelGC：**年轻代使用Parallel Scavenge垃圾收集器。
+
+**-XX:+UseParNewGC：**年轻代使用ParNew垃圾收集器。
+
+**-XX:+UseParallelOldGC：**老年代使用Parallel Old收集器。
+
+**-XX:+UseConcMarkSweepGC：**老年代使用CMS收集器，青年代默认使用ParNew。
+
+**-XX:+UseCMSCompactAtFullCollection：**CMS收集器的参数，在Full GC的时候，对老年代进行压缩整理。
+
+> 因为CMS是不会移动内存的，因此非常容易产生内存碎片。因此增加这个参数就可以在FullGC后对内存进行压缩整理，消除内存碎片。当然这个操作也有一定缺点，就是会增加CPU开销与GC时间，所以可以通过-XX:CMSFullGCsBeforeCompaction这个参数来控制多少次Full GC以后进行一次碎片整理。
+
+**-XX:+CMSInitiatingOccupancyFraction：**CMS收集器的参数，代表老年代使用空间达到80%后，就进行Full GC，默认92%
 
 **-XX:+PrintFlagsInitial** ==>  查看参数的初始值(可能后来被修改)
 

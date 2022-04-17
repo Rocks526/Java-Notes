@@ -696,7 +696,39 @@ object Demo4 {
 }
 ```
 
+### 参数默认值
+
+> 和Python类似，Scala支持函数的参数可以设置默认值
+
+```scala
+/**
+ * 函数默认值
+ */
+object Demo9 {
+
+  def main(args: Array[String]): Unit = {
+
+    def test(name :String = "rocks"): Unit ={
+      println(name)
+    }
+
+    test()
+    test("Rocks526")
+
+    def test2(name : String = "Rocks", age : Int): Unit ={
+      println(s"Name=$name, age=$age")
+    }
+
+//    test2(22)  由于参数值会自动从左往右填充 因此22会当成name解析 由于age没有值 所以报错
+    test2(age=22)
+  }
+
+}
+```
+
 ### 高阶函数
+
+> Scala是完全面向函数的语言，函数可以做任何事，包括函数赋值给变量，函数作为函数的参数，函数作为函数的返回值等等。
 
 > 在Scala中，将参数为函数的函数称为高阶函数
 
@@ -763,7 +795,9 @@ object Demo6 {
 
 > 函数柯里化：将一个接收多个参数的函数转化成一个接受一个参数的函数过程，可以简单的理解为一种特殊的参数列表声明方式。
 >
-> 闭包：就是**一个函数**和与**其相关的引用环境（变量）**组合的一个**整体**(实体)
+> 闭包：一个函数在实现逻辑时，将外部的变量引入到函数的内部，改变了这个变量的生命周期，称之为闭包。
+>
+> 通过闭包实现函数柯里化。
 
 ```scala
 object Demo7 {

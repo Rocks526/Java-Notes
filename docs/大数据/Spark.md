@@ -18,9 +18,13 @@ Spark是一种**基于内存**快速、通用、可扩展的大数据分析引�
 ![image-20201207112047418](http://rocks526.top/lzx/image-20201207112047418.png)
 
 **Spark Core：** 实现了 Spark 的基本功能，包含任务调度、内存管理、错误恢复、与存储系统交互等模块。Spark Core 中还包含了对弹性分布式数据集(resilient distributed dataset，简称RDD)的 API 定义。 
+
 **Spark SQL：** 是 Spark 用来操作结构化数据的程序包。通过 Spark SQL，我们可以使用 SQL 或者 Apache Hive 版本的 SQL 方言(HQL)来查询数据。Spark SQL 支持多种数据源，比如Hive 表、Parquet 以及 JSON 等。 
+
 **Spark Streaming：** 是 Spark 提供的对实时数据进行流式计算的组件。提供了用来操作数据流的 API，并且与 Spark Core 中的 RDD API 高度对应。 
+
 **Spark MLlib：** 提供常见的机器学习(ML)功能的程序库。包括分类、回归、聚类、协同过滤等，还提供了模型评估、数据导入等额外的支持功能。 
+
 **集群管理器：** Spark 设计为可以高效地在一个计算节点到数千个计算节点之间伸缩计算。为了实现这样的要求，同时获得最大灵活性，Spark 支持在各种集群管理器(cluster manager)上运行，包括 Hadoop YARN、Apache Mesos，以及Spark 自带的一个简易调度器，叫作独立调度器。
 
 Spark得到了众多大数据公司的支持，这些公司包括Hortonworks、IBM、Intel、Cloudera、MapR、Pivotal、百度、阿里、腾讯、京东、携程、优酷土豆。当前百度的Spark已应用于凤巢、大搜索、直达号、百度大数据等业务；阿里利用GraphX构建了大规模的图计算和图挖掘系统，实现了很多生产系统的推荐算法；腾讯Spark集群达到8000台的规模，是当前已知的世界上最大的Spark集群。
@@ -674,7 +678,316 @@ rdd.flatMap(1 to _).collect()
 
 ### RDD的actions(动作)
 
+-  reduce(func)
 
+作用：通过func函数聚集RDD中的所有元素，先聚合分区内数据，再聚合分区间数据。
+
+案例：创建一个RDD，将所有元素聚合得到结果。
+
+![image-20201208194526381](http://rocks526.top/lzx/image-20201208194526381.png)
+
+- collect()
+
+作用：在驱动程序中，以数组的形式返回数据集的所有元素。
+
+案例：创建一个RDD，并将RDD内容收集到Driver端打印
+
+![image-20201208194607729](http://rocks526.top/lzx/image-20201208194607729.png)
+
+- count()
+
+作用：返回RDD中元素的个数
+
+案例：创建一个RDD，统计该RDD的条数
+
+![image-20201208194705130](http://rocks526.top/lzx/image-20201208194705130.png)
+
+- first()
+
+作用：返回RDD中的第一个元素
+
+案例：创建一个RDD，返回该RDD中的第一个元素
+
+![image-20201208194747278](http://rocks526.top/lzx/image-20201208194747278.png)
+
+- take(n)
+
+作用：返回一个由RDD的前n个元素组成的数组
+
+案例：创建一个RDD，统计该RDD的条数
+
+![image-20201208194834934](http://rocks526.top/lzx/image-20201208194834934.png)
+
+- takeOrdered(n)
+
+作用：返回该RDD排序后的前n个元素组成的数组
+
+案例：创建一个RDD，统计该RDD的条数
+
+![image-20201208195454257](http://rocks526.top/lzx/image-20201208195454257.png)
+
+- aggregate
+
+参数：(zeroValue: U)(seqOp: (U, T) ⇒ U, combOp: (U, U) ⇒ U)
+
+作用：aggregate函数将每个分区里面的元素通过seqOp和初始值进行聚合，然后用combine函数将每个分区的结果和初始值(zeroValue)进行combine操作。这个函数最终返回的类型不需要和RDD中元素类型一致。
+
+案例：创建一个RDD，将所有元素相加得到结果
+
+![image-20201208195749638](http://rocks526.top/lzx/image-20201208195749638.png)
+
+- fold(num)(func)
+
+作用：折叠操作，aggregate的简化操作，seqop和combop一样。
+
+案例：创建一个RDD，将所有元素相加得到结果
+
+![image-20201208200004870](http://rocks526.top/lzx/image-20201208200004870.png)
+
+- saveAsTextFile(path)
+
+作用：将数据集的元素以textfile的形式保存到HDFS文件系统或者其他支持的文件系统，对于每个元素，Spark将会调用toString方法，将它装换为文件中的文本。
+
+![image-20201208201628391](http://rocks526.top/lzx/image-20201208201628391.png)
+
+- saveAsSequenceFile(path) 
+
+作用：将数据集中的元素以Hadoop sequencefile的格式保存到指定的目录下，可以使HDFS或者其他Hadoop支持的文件系统。
+
+- saveAsObjectFile(path) 
+
+作用：用于将RDD中的元素序列化成对象，存储到文件中。
+
+> 使用Java自带的序列化机制。
+
+- countByKey()
+
+作用：针对(K,V)类型的RDD，返回一个(K,Int)的map，表示每一个key对应的元素个数
+
+案例：创建一个PairRDD，统计每种key的个数
+
+![image-20201208202345879](http://rocks526.top/lzx/image-20201208202345879.png)
+
+- foreach(func)
+
+作用：在数据集的每一个元素上，运行函数func.
+
+案例：创建一个RDD，对每个元素进行打印
+
+![image-20201208202743955](http://rocks526.top/lzx/image-20201208202743955.png)
+
+### RDD中的函数传递
+
+在实际开发中我们往往需要自己定义一些对于RDD的操作，那么此时需要注意的是，初始化工作是在Driver端进行的，而实际运行程序是在Executor端进行的，这就涉及到了跨进程通信，是需要进行RDD序列化。
+
+对于方法的传递，需要将class继承Serializable，对于类属性的传递，需要类继承Serializable，方法里将类属性赋值给临时变量进行操作。
+
+```scala
+import org.apache.spark.rdd.RDD
+
+// 自定义RDD处理方法
+// 继承Serializable 实现序列化
+class Search(query: String) extends Serializable {
+    
+    //过滤出包含字符串的数据
+    def isMatch(s: String): Boolean = {
+        s.contains(query)
+    }
+    
+    //过滤出包含字符串的RDD
+    def getMatch1 (rdd: RDD[String]): RDD[String] = {
+        rdd.filter(isMatch)
+    }
+    
+    //过滤出包含字符串的RDD
+    def getMatch2(rdd: RDD[String]): RDD[String] = {
+        // 类的属性需要通过赋值给临时变量完成传递
+        val query_word = this.query
+        rdd.filter(x => x.contains(query_word))
+    }
+    
+}
+```
+
+```scala
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
+
+object Demo1 {
+    def main(args: Array[String]): Unit = {
+        
+        //1.初始化配置信息及SparkContext
+        val sparkConf: SparkConf = new SparkConf().setAppName("WordCount").setMaster("local[*]")
+        val sc = new SparkContext(sparkConf)
+        
+        //2.创建一个RDD
+        val rdd: RDD[String] = sc.parallelize(Array("hadoop", "spark", "hive", "hbase"))
+        
+        //3.创建一个Search对象
+        val search = new Search("h")
+        
+        //4.运用第一个过滤函数并打印结果
+        val match1: RDD[String] = search.getMatch1(rdd)
+        match1.collect().foreach(println)
+    
+        //5.运用第一个过滤函数并打印结果
+        val match2: RDD[String] = search.getMatch2(rdd)
+        match2.collect().foreach(println)
+    }
+    
+}
+```
+
+### RDD依赖关系
+
+RDD只支持粗粒度转换，即在大量记录上执行的单个操作。将创建RDD的一系列Lineage（血统）记录下来，以便恢复丢失的分区。RDD的Lineage会记录RDD的元数据信息和转换行为，当该RDD的部分分区数据丢失时，它可以根据这些信息来重新运算和恢复丢失的数据分区。
+
+![image-20201209094130763](http://rocks526.top/lzx/image-20201209094130763.png)
+
+> 通过toDebugString和dependencies可以查看RDD的依赖关系
+
+**RDD的依赖关系分为两种：窄依赖和宽依赖。**
+
+窄依赖是指每一个父RDD的Partition最多被子RDD的一个Partition使用。
+
+![image-20201209094313826](http://rocks526.top/lzx/image-20201209094313826.png)
+
+宽依赖指的是多个子RDD的Partition会依赖同一个父RDD的Partition，会引起shuffle。
+
+![image-20201209094326875](http://rocks526.top/lzx/image-20201209094326875.png)
+
+> 宽依赖并不是特指，Spark源码没有宽依赖这个类，只有窄依赖的类，窄依赖之外的全部是宽依赖。
+>
+> 之所以分窄依赖和宽依赖，主要是因为宽依赖的一个分区会根据某种条件分为多个子分区，而这种操作必须是分区已知才能执行，因此窄依赖之间没有依赖关系，可以并行处理，宽依赖必须之前的RDD已知，需要串行处理，因此一个宽依赖也对应一个Stage。
+
+- DAG
+
+DAG(Directed Acyclic Graph)叫做有向无环图，原始的RDD通过一系列的转换就就形成了DAG，根据RDD之间的依赖关系的不同将DAG划分成不同的Stage，对于窄依赖，partition的转换处理在Stage中完成计算。对于宽依赖，由于有Shuffle的存在，只能在parent RDD处理完成后，才能开始接下来的计算，因此**宽依赖是划分Stage的依据**。
+
+![image-20201209094657015](http://rocks526.top/lzx/image-20201209094657015.png)
+
+> Stage的划分是从后往前推的，遇到宽依赖/Shuffle进行Stage的隔断，因此Stage的数量等于宽依赖/Shuffle数量+1.
+
+- Spark的任务划分
+
+RDD任务的划分为：Application、Job、Stage和Task。
+
+1）Application：初始化一个SparkContext即生成一个Application，即我们提交的jar里面的主类
+
+2）Job：一个Action算子就会生成一个Job
+
+3）Stage：根据RDD之间的依赖关系的不同将Job划分成不同的Stage，遇到一个宽依赖则划分一个Stage。
+
+4）Task：Stage是一个TaskSet，将Stage划分的结果发送到不同的Executor执行即为一个Task。
+
+> 为了并行度更高，一个分区会产生一个Task，但是没有依赖关系的分区才会并行执行，因此Task数量等于Stage最后一步的RDD的分区数。
+>
+> Application->Job->Stage-> Task每一层都是1对n的关系。
+>
+> 在Spark的UI，4040端口可以看到任务的划分/执行情况和DAG。
+
+### RDD缓存
+
+RDD通过persist方法或cache方法可以将前面的计算结果缓存，默认情况下 persist() 会把数据以序列化的形式缓存在 JVM 的堆空间中。 
+
+但是并不是这两个方法被调用时立即缓存，而是触发后面的action时，该RDD将会被缓存在计算节点的内存中，并供后面重用。
+
+> cache最终也是调用了persist方法，默认的存储级别都是仅在内存存储一份，Spark的存储级别还有好多种，存储级别在StorageLevel类中定义的。
+
+![image-20201209095330873](http://rocks526.top/lzx/image-20201209095330873.png)
+
+![image-20201209095344029](http://rocks526.top/lzx/image-20201209095344029.png)
+
+> 在存储级别的末尾加上“_2”都是把持久化数据存为两份。
+>
+> OFF_HEAP是堆外内存。
+
+缓存有可能丢失，或者存储存储于内存的数据由于内存不足而被删除，RDD的缓存容错机制保证了即使缓存丢失也能保证计算的正确执行。通过基于RDD的一系列转换，丢失的数据会被重算，由于RDD的各个Partition是相对独立的，因此只需要计算丢失的部分即可，并不需要重算全部Partition。
+
+![image-20201209102956912](http://rocks526.top/lzx/image-20201209102956912.png)
+
+- 总结
+
+RDD的缓存机制主要是为了优化热点RDD的频繁计算问题，通过缓存机制可以让热点RDD只需要一次计算，后续使用缓存内容。
+
+由于缓存可能不可靠，存在丢失问题，因此RDD缓存后血缘关系也不会删除，当缓存丢失时，会自动计算还原RDD。
+
+### RDD的CheckPoint
+
+Spark中对于数据的保存除了持久化操作之外，还提供了一种检查点的机制，检查点（本质是通过将RDD写入Disk做检查点）是为了通过lineage做容错的辅助，lineage过长会造成容错成本过高，这样就不如在中间阶段做检查点容错，如果之后有节点出现问题而丢失分区，从做检查点的RDD开始重做Lineage，就会减少开销。检查点通过将数据写入到HDFS文件系统实现了RDD的检查点功能。
+
+为当前RDD设置检查点。该函数将会创建一个二进制的文件，并存储到checkpoint目录中，该目录是用SparkContext.setCheckpointDir()设置的。在checkpoint的过程中，该RDD的所有依赖于父RDD中的信息将全部被移除。对RDD进行checkpoint操作并不会马上被执行，必须执行Action操作才能触发。
+
+![image-20201209103555660](http://rocks526.top/lzx/image-20201209103555660.png)
+
+- 总结
+
+检查点机制主要是为了解决血缘关系太长，一步运算出错需要全部重算的问题。通过检查点可以将血缘斩断，之后计算复用检查点的内容。
+
+检查点除了存储hdfs之外，还可以存储文件系统，推荐hdfs，因为检查点会将血缘关系斩断，需要确保检查点存储可靠，而hdfs有备份系统。
+
+### 键值对RDD的数据分区器
+
+Spark目前支持Hash分区和Range分区，用户也可以自定义分区。
+
+Hash分区为当前的默认分区，Spark中分区器直接决定了RDD中分区的个数、RDD中每条数据经过Shuffle过程属于哪个分区和Reduce的个数。
+
+> 只有Key-Value类型的RDD才有分区器的，非Key-Value类型的RDD分区器的值是None
+> 每个RDD的分区ID范围：0~numPartitions-1，决定这个值是属于那个分区的。
+
+#### 获取RDD分区
+
+可以通过使用RDD的partitioner 属性来获取 RDD 的分区方式。它会返回一个 scala.Option 对象， 通过get方法获取其中的值。
+
+![image-20201208183358286](http://rocks526.top/lzx/image-20201208183358286.png)
+
+#### Hash分区器
+
+HashPartitioner分区的原理：对于给定的key，计算其hashCode，并除以分区的个数取余，如果余数小于0，则用余数+分区的个数（否则加0），最后返回的值就是这个key所属的分区ID。
+
+![image-20201208183908241](http://rocks526.top/lzx/image-20201208183908241.png)
+
+#### Range分区器
+
+HashPartitioner分区弊端：可能导致每个分区中数据量的不均匀，极端情况下会导致某些分区拥有RDD的全部数据。
+
+RangePartitioner作用：将一定范围内的数映射到某一个分区内，尽量保证每个分区中数据量的均匀，而且分区与分区之间是有序的，一个分区中的元素肯定都是比另一个分区内的元素小或者大，但是分区内的元素是不能保证顺序的。简单的说就是将一定范围内的数映射到某一个分区内。
+
+实现过程为：
+
+第一步：先从整个RDD中抽取出样本数据，将样本数据排序，计算出每个分区的最大key值，形成一个Array[KEY]类型的数组变量rangeBounds；
+
+第二步：判断key在rangeBounds中所处的范围，给出该key值在下一个RDD中的分区id下标；该分区器要求RDD中的KEY类型必须是可以排序的
+
+#### 自定义分区
+
+要实现自定义的分区器，你需要继承 org.apache.spark.Partitioner 类并实现下面三个方法：
+
+- numPartitions: Int:返回创建出来的分区数。
+
+- getPartition(key: Any): Int:返回给定键的分区编号(0到numPartitions-1)。 
+
+- equals():Java 判断相等性的标准方法。这个方法的实现非常重要，Spark 需要用这个方法来检查你的分区器对象是否和其他分区器实例相同，这样 Spark 才可以判断两个 RDD 的分区方式是否相同。
+
+案例：将相同后缀的数据写入相同的文件，通过将相同后缀的数据分区到相同的分区并保存输出来实现。
+
+![image-20201208184453302](http://rocks526.top/lzx/image-20201208184453302.png)
+
+> 使用自定义的 Partitioner 是很容易的:只要把它传给 partitionBy() 方法即可。
+>
+> Spark 中有许多依赖于数据混洗的方法，比如 join() 和 groupByKey()，它们也可以接收一个可选的 Partitioner 对象来控制输出数据的分区方式。
+
+### 数据的读取和保存
+
+
+
+
+
+
+
+
+
+### 累加器
 
 
 
@@ -696,7 +1009,154 @@ rdd.flatMap(1 to _).collect()
 
 # <a id="spark-streaming">Spark Streaming</a>
 
+### Spark Streaming概述
 
+Spark Streaming 是 Spark Core API 的扩展，它支持弹性的，高吞吐的，容错的实时数据流的处理。
+
+Spark Streaming支持的数据输入源很多，例如：Kafka、Flume、Twitter、ZeroMQ和简单的TCP套接字等等。
+
+数据输入后可以用Spark的高度抽象原语如：map、reduce、join、window等进行运算。
+
+而结果也能保存在很多地方，如HDFS，数据库等。
+
+![image-20201209104209093](http://rocks526.top/lzx/image-20201209104209093.png)
+
+在内部，它工作原理如上，Spark Streaming 接收实时输入数据流并将数据切分成多个 batch（批）数据，然后由 Spark 引擎处理它们以生成最终的 stream of results in batches（分批流结果）。
+
+![image-20201209104242109](http://rocks526.top/lzx/image-20201209104242109.png)
+
+Spark Streaming 提供了一个名为 *discretized stream* 或 *DStream* 的高级抽象，它代表一个连续的数据流。DStream 可以从数据源的输入数据流创建，例如 Kafka，Flume 以及 Kinesis，或者在其他 DStream 上进行高层次的操作以创建。在内部，一个 DStream 是通过一系列的 RDDs 来表示。
+
+### Word Count入门案例
+
+- 引入Maven依赖
+
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+    </dependencies>
+```
+
+- 编写代码
+
+```scala
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+
+// WordCount案例
+object Demo1 {
+
+    def main(args: Array[String]): Unit = {
+        // 设置app配置
+        val conf = new SparkConf().setMaster("local[*]").setAppName("SparkStreaming-WordCount")
+        // 初始化StreamingContext 设置时间间隔20s
+        val sc = new StreamingContext(conf, Seconds(20))
+        // 通过读取Socket创建DStream 读取到的数据是行
+        val lines = sc.socketTextStream("localhost", 9999)
+        // 行切分单词 转换元组
+        val words = lines.flatMap(_.split(" ")).map((_,1))
+        // 单词统计
+        val res = words.reduceByKey(_+_)
+        // 打印结果
+        res.print()
+    
+        // 启动SparkStreaming
+        sc.start()
+        sc.awaitTermination()
+    }
+
+}
+```
+
+- 往9999端口发送数据
+
+> 在Linux下，可以通过netcat工具向9999端口不断的发送数据，由于我的Spark跑在docker内，端口不同，因此写一个ServerSocket接收9999连接，读取用户输入数据发送给spark。
+
+```java
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+// Socket Server
+public class SocketServer {
+
+    public static void main(String[] args) throws IOException {
+
+        ServerSocket serverSocket = new ServerSocket();
+        serverSocket.bind(new InetSocketAddress("localhost", 9999));
+        System.out.println("Server start!");
+        Socket client = serverSocket.accept();
+        System.out.println("Client Connected!");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+        while (true){
+            String line = bufferedReader.readLine();
+            // 注意加上\n 客户端是readLine 按行读取 如果没有\n 会一直阻塞
+            bufferedWriter.write(line + "\n");
+            bufferedWriter.flush();
+        }
+    }
+
+}
+```
+
+- 统计示例
+
+![image-20201209114035816](http://rocks526.top/lzx/image-20201209114035816.png)
+
+> 通过拷贝spark的conf目录下的log4j文件到idea目录下，修改日志级别可以减少多余信息输入。
+
+### Dstream的创建
+
+Spark Streaming原生支持一些不同的数据源。一些“核心”数据源已经被打包到Spark Streaming 的 Maven 依赖中，而其他的一些则可以通过 spark-streaming-kafka 等附加工件获取。
+
+每个接收器都以 Spark 执行器程序中一个长期运行的任务的形式运行，因此会占据分配给应用的 CPU 核心。此外，我们还需要有可用的 CPU 核心来处理数据。这意味着如果要运行多个接收器，就必须至少有和接收器数目相同的核心数，还要加上用来完成计算所需要的核心数。例如，如果我们想要在流计算应用中运行 10 个接收器，那么至少需要为应用分配 11 个 CPU 核心。所以如果在本地模式运行，不能使用local[1]。
+
+#### 文件数据源
+
+
+
+
+
+#### RDD队列
+
+
+
+
+
+#### 自定义数据源
+
+
+
+
+
+#### Kafka数据源
+
+
+
+
+
+
+
+
+
+### Dstream的转换
+
+
+
+
+
+### Dstream的输出
 
 
 

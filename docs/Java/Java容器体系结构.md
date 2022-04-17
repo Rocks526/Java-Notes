@@ -2410,7 +2410,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
 
 - 介绍
 
-Map接口的扩展，`支持Key排序的Ma`p，并扩展了一些`根据Key大小切分范围`的方法。
+Map接口的扩展，`支持Key排序的Map`，并扩展了一些`根据Key大小切分范围`的方法。
 
 - 源码
 
@@ -2449,31 +2449,295 @@ public interface SortedMap<K,V> extends Map<K,V> {
 }
 ```
 
+### 2.14 Queue接口
+
+- 介绍
+
+Queue接口是队列的顶级接口，定义了队列的统一行为。
+
+- 源码
+
+```java
+package java.util;
+
+/**
+ * 队列接口
+ */
+public interface Queue<E> extends Collection<E> {
+
+    // 队尾添加元素，失败时抛出异常
+    boolean add(E e);
+
+    // 队尾添加元素，失败时返回false
+    boolean offer(E e);
+
+    // 队头取出元素，失败时抛出异常
+    E remove();
+
+    // 队头取出元素，失败时返回null
+    E poll();
+
+    // 查看队头元素，失败时抛出异常
+    E element();
+
+    // 查看队头元素，失败时返回null
+    E peek();
+}
+```
+
+### 2.15 Deque接口
+
+- 介绍
+
+Deque接口是Queue接口的扩展，`双端队列`，支持从队列的两端进行操作，并且支持`栈模型`。
+
+- 源码
+
+```java
+package java.util;
+
+/**
+ * 双端队列接口
+ */
+public interface Deque<E> extends Queue<E> {
+
+    // 队头添加元素，失败抛出异常
+    void addFirst(E e);
+
+    // 队尾添加元素，失败抛出异常
+    void addLast(E e);
+
+    // 队头添加元素，失败返回false
+    boolean offerFirst(E e);
+
+    // 队尾添加元素，失败返回false
+    boolean offerLast(E e);
+
+    // 队头取出元素，失败抛出异常
+    E removeFirst();
+
+    // 队尾取出元素，失败抛出异常
+    E removeLast();
+
+    // 队头取出元素，失败返回null
+    E pollFirst();
+
+    // 队尾取出元素，失败返回null
+    E pollLast();
+
+    // 查看队头元素，失败抛出异常
+    E getFirst();
+
+    // 查看队尾元素，失败抛出异常
+    E getLast();
+
+    // 查看队头元素，失败返回null
+    E peekFirst();
+
+    // 查看队尾元素，失败返回null
+    E peekLast();
+
+
+    // 删除包含指定元素的第一个匹配项
+    boolean removeFirstOccurrence(Object o);
+
+    // 删除包含指定元素的最后一个匹配项
+    boolean removeLastOccurrence(Object o);
+
+    // =================== 队列方法 ============================================
+
+    boolean add(E e);
+
+    boolean offer(E e);
+
+    E remove();
+
+    E poll();
+
+    E element();
+
+    E peek();
+
+
+    // ======================== 栈方法 =============================
+
+    // 入栈
+    void push(E e);
+
+    // 出栈
+    E pop();
+
+
+    // ======================== 集合方法 ====================================
+
+    boolean remove(Object o);
+
+    boolean contains(Object o);
+
+    public int size();
+
+    // 正向返回迭代器
+    Iterator<E> iterator();
+
+    // 相反的顺序返回迭代器
+    Iterator<E> descendingIterator();
+
+}
+```
+
+### 2.16 BlockingQueue接口
+
+- 介绍
+
+基于Queue接口的扩展，`阻塞队列`，`支持对队列的操作进行超时等待，用于实现生产者-消费者模型`。
+
+- 源码
+
+```java
+package java.util.concurrent;
+
+import java.util.Collection;
+import java.util.Queue;
+
+/**
+ * 阻塞队列接口，对队列接口的扩展，用于实现生产者-消费者模型
+ */
+public interface BlockingQueue<E> extends Queue<E> {
+
+    // 往队列里添加元素，失败抛出异常
+    boolean add(E e);
+
+    // 往队列里添加元素，失败返回false
+    boolean offer(E e);
+
+    // 往队列里添加元素，一直等待，可被中断
+    void put(E e) throws InterruptedException;
+
+    // 往队列里添加元素，超时后返回false
+    boolean offer(E e, long timeout, TimeUnit unit)
+        throws InterruptedException;
+
+    // 从队列里取出元素，一直等待，可被中断
+    E take() throws InterruptedException;
+
+    // 从队列里取出元素，超时后返回null
+    E poll(long timeout, TimeUnit unit)
+        throws InterruptedException;
+
+    // 返回队列剩余容量
+    int remainingCapacity();
+
+
+    // 移除指定元素，失败返回false
+    boolean remove(Object o);
+
+    // 判断队列是否包含某个元素
+    public boolean contains(Object o);
+
+    // 将队列所有元素导出到参数集合里，返回导出的数量
+    int drainTo(Collection<? super E> c);
+
+    // 将队列所有元素导出到参数集合里，第二个参数指定要导出的数量，结果返回导出的数量
+    int drainTo(Collection<? super E> c, int maxElements);
+}
+```
+
+### 2.17 AbstractQueue抽象类
+
+- 介绍
+
+队列的抽象实现，基于基础操作，实现了一些复合操作的逻辑。
+
+- 源码
+
+```java
+package java.util;
+
+
+/**
+ * 队列的抽象实现，一些基础操作由实现类实现，抽象类基于基础操作实现了一些复合操作的逻辑
+ */
+public abstract class AbstractQueue<E>
+    extends AbstractCollection<E>
+    implements Queue<E> {
+
+    protected AbstractQueue() {
+    }
+
+    // 调用offer添加，offer子类实现
+    public boolean add(E e) {
+        if (offer(e))
+            return true;
+        else
+            throw new IllegalStateException("Queue full");
+    }
+
+    // 调用poll删除，poll子类实现
+    public E remove() {
+        E x = poll();
+        if (x != null)
+            return x;
+        else
+            throw new NoSuchElementException();
+    }
+
+    
+    // 调用peek实现，peek子类实现
+    public E element() {
+        E x = peek();
+        if (x != null)
+            return x;
+        else
+            throw new NoSuchElementException();
+    }
+
+    // 一直循环弹出
+    public void clear() {
+        while (poll() != null)
+            ;
+    }
+
+    // 循环add
+    public boolean addAll(Collection<? extends E> c) {
+        if (c == null)
+            throw new NullPointerException();
+        if (c == this)
+            throw new IllegalArgumentException();
+        boolean modified = false;
+        for (E e : c)
+            if (add(e))
+                modified = true;
+        return modified;
+    }
+
+}
+```
+
 # 三：Java常用容器总结
 
-| 容器                  | 底层数据结构 | 是否有序 | 允许重复 | 允许NULL | 线程安全 | 新增 | 删除 | 修改 | 删除 |
-| --------------------- | ------------ | -------- | -------- | -------- | -------- | ---- | ---- | ---- | ---- |
-| ArrayList             |              |          |          |          |          |      |      |      |      |
-| LinkedList            |              |          |          |          |          |      |      |      |      |
-| Vector                |              |          |          |          |          |      |      |      |      |
-| Stack                 |              |          |          |          |          |      |      |      |      |
-| CopyOnWriteArrayList  |              |          |          |          |          |      |      |      |      |
-| HashSet               |              |          |          |          |          |      |      |      |      |
-| LinkedHashSet         |              |          |          |          |          |      |      |      |      |
-| TreeSet               |              |          |          |          |          |      |      |      |      |
-| ConcurrentSkipListSet |              |          |          |          |          |      |      |      |      |
-| CopyOnWriteArraySet   |              |          |          |          |          |      |      |      |      |
-| HashMap               |              |          |          |          |          |      |      |      |      |
-| HashTable             |              |          |          |          |          |      |      |      |      |
-| LinkedHashMap         |              |          |          |          |          |      |      |      |      |
-| ConcurrentHashMap     |              |          |          |          |          |      |      |      |      |
-| ConcurrentSkipListMap |              |          |          |          |          |      |      |      |      |
-| ArrayBlockingQueue    |              |          |          |          |          |      |      |      |      |
-| LinkedBlockingQueue   |              |          |          |          |          |      |      |      |      |
-| LinkedBlockingDeque   |              |          |          |          |          |      |      |      |      |
-| LinkedTransferQueue   |              |          |          |          |          |      |      |      |      |
-| PriorityBlockingQueue |              |          |          |          |          |      |      |      |      |
-| SynchronousQueue      |              |          |          |          |          |      |      |      |      |
+| 容器                  | 底层结构                        | 应用场景             | 有序 | 重复 | NULL | 线程安全 | 备注 |
+| --------------------- | ------------------------------- | -------------------- | ---- | ---- | ---- | -------- | ---- |
+| ArrayList             | 数组                            | 列表                 | √    | √    | √    | ×        |      |
+| LinkedList            | 双向链表                        | 列表、队列、栈       | √    | √    | √    | ×        |      |
+| Vector                | 数组                            | 列表                 |      |      |      |          |      |
+| Stack                 | 数组                            | 列表、栈             |      |      |      |          |      |
+| CopyOnWriteArrayList  | 数组                            | 列表                 |      |      |      |          |      |
+| HashSet               | 数组                            | 集合                 |      |      |      |          |      |
+| LinkedHashSet         | 链表                            | 有序集合（访问顺序） |      |      |      |          |      |
+| TreeSet               | 红黑树                          | 有序集合（支持排序） |      |      |      |          |      |
+| ConcurrentSkipListSet | 跳表                            |                      |      |      |      |          |      |
+| CopyOnWriteArraySet   | 数组                            |                      |      |      |      |          |      |
+| HashMap               | 数组 + 链表 + 红黑树            | 哈希表               |      |      |      |          |      |
+| HashTable             | 数组 + 链表                     |                      |      |      |      |          |      |
+| LinkedHashMap         | 数组 + 链表 + 红黑树 + 双向链表 |                      |      |      |      |          |      |
+| ConcurrentHashMap     | 哈希表 + 链表 + 红黑树          |                      |      |      |      |          |      |
+| ConcurrentSkipListMap | 哈希表 + 链表 + 红黑树 + 跳表   |                      |      |      |      |          |      |
+| ArrayBlockingQueue    | 数组 + 队列                     |                      |      |      |      |          |      |
+| LinkedBlockingQueue   | 链表 + 队列                     |                      |      |      |      |          |      |
+| LinkedBlockingDeque   | 链表 + 队列                     |                      |      |      |      |          |      |
+| LinkedTransferQueue   |                                 |                      |      |      |      |          |      |
+| PriorityBlockingQueue |                                 |                      |      |      |      |          |      |
+| SynchronousQueue      |                                 |                      |      |      |      |          |      |
 
 
 

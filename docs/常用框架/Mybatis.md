@@ -22,6 +22,8 @@
 
 # 二：Mybatis原理
 
+- [ ] [核心工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/11-核心工具包.md)
+
 - [ ] [源码环境搭建](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/11-源码环境搭建.md)
 
 - [ ] [解析器模块](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/12-解析器模块源码.md)

@@ -62,7 +62,7 @@ VO vo = JSON.parseObject("{...}", VO.class); //反序列化
 </dependency>
 ```
 
-#### 基本API
+#### 序列化和反序列化API
 
 ```java
 package fastjson;
@@ -135,11 +135,94 @@ fastjson的操作十分简单，通过JSONObject对象可以完成对象和JSON�
 >
 > 除了可以将JSON和对象进行转换之外，还可以和Map进行转换，也可以通过Map构建JSONObject。
 
+#### 利用JSONObject和JSONArray构造Json字符串
+
+```java
+    //根据JSONObject和JSONArray构造Json字符串
+    private static void buildJsonStrAndObjectByfastJson(){
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < 2; i++) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userId", i);
+            jsonObject.put("userName", "Rocks" + i);
+            jsonObject.put("birthday", "2016/12/12");
+            jsonArray.add(jsonObject);
+        }
+        String jsonOutput = jsonArray.toJSONString();
+        System.out.println(jsonOutput);
+    }
+```
+
+JSONObject对象的常用操作方法：
+
+- put：添加属性
+- remove：移除属性
+- getXXX：根据key获取value，可以获取不同类型
+
 #### 定制序列化
 
 > 在上面的例子中，针对Date，BigDecimal等类型，转换的形式可能不是想要的结果，需要通过一些配置实现定制。
 
 - 方式一：@JSONField
+
+```java
+package entity;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+@Data
+@Accessors(chain = true)
+public class User {
+    //fastjson 设置序列化后的id名称 key为userId的key可反序列化 key为id的该值会被忽略
+    //fastjson ordinal用来控制排序字段 默认为0 越大排序越靠后 为负值时，默认取绝对值
+    @JSONField(name = "userId", ordinal = 1)
+    private Long id;
+
+    @JSONField(ordinal = 2)
+    private String userName;
+
+    //fastjson deserialize和serialize用来控制字段是否序列化和反序列化
+    @JSONField(deserialize = false, serialize = false)
+    private String password;
+
+    //fastjson 格式化Date格式
+    @JSONField(format = "yyyy/MM/dd", ordinal = 10)
+    private Date birthday;
+
+    //fastjson defaultValue用来设置默认值
+    @JSONField(defaultValue = "0")
+    private BigDecimal price;
+
+    private Set<User> friends;
+
+    private List<Product> products;
+
+}
+```
+
+常用参数如下：
+
+ format控制格式化。
+
+ ordinal控制排序，越小越靠前。
+
+ deserialize和serialize用来控制是否进行序列化和反序列化。
+
+ name用来控制序列化后的key的名字，反序列化时也会使用该名字，如果使    用原名，会被忽略掉。
+
+ defaultValue用来设置默认值。
+
+> @JSONField可以添加在字段上或get，set方法上，反序列化时，如果字段为private，必须提供set方法，而且反序列化时，必须要有空参构造方法。
+
+- 方式二：使用SerializerFeature的WriteDateUseDateFormat
+
+
 
 
 
@@ -150,6 +233,16 @@ fastjson的操作十分简单，通过JSONObject对象可以完成对象和JSON�
 
 
 
+
+### SpringBoot里使用fastjson
+
+
+
+
+
+
+
+### fastjson的漏洞
 
 
 

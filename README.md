@@ -12,7 +12,7 @@
 
 - [x] [Java常见关键字](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java常见关键字.md)
 - [x] [JavaIO体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/JavaIO体系结构.md)
-- [x] [Exception体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Exception体系结构.md)
+- [x] [Java异常体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java异常体系结构.md)
 - [x] [Java中的包装类](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java中的包装类.md)
 - [x] [Java枚举类型](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java枚举类型.md)
 - [x] [Java容器体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java容器体系结构.md)
@@ -24,10 +24,10 @@
 - [x] [Java日期](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java日期.md)
 - [x] [Jdk动态代理](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Jdk动态代理.md)
 - [x] [Lambda表达式](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Lambda.md)
-- [x] [JavaNIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/JavaNIO.md)
+- [x] [Java的NIO](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java的NIO.md)
 - [ ] [Java堆外内存](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java堆外内存.md)
 - [x] [Java虚拟机](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机.md)
-- [ ] [Java定时任务](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java定时任务.md)
+- [x] [Java定时任务](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java定时任务.md)
 - [x] [Jdk各版本新特性](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Jdk各版本新特性.md)
 - [x] [Jdk源码](https://github.com/Rocks526/Jdk8-Notes)
 
@@ -90,7 +90,6 @@
 
 ## MQ
 
-- [ ] [Disruptor](https://github.com/Rocks526/Java-Notes/blob/master/docs/MQ/Disruptor.md)
 - [ ] [RocketMQ](https://github.com/Rocks526/Java-Notes/blob/master/docs/MQ/RocketMQ.md)
 - [ ] [RabbitMQ](https://github.com/Rocks526/Java-Notes/blob/master/docs/MQ/RabbitMQ.md)
 - [ ] [Kafka](https://github.com/Rocks526/Java-Notes/blob/master/docs/MQ/Kafka.md)
@@ -127,6 +126,12 @@
 - [ ] [面试题汇总](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/面试题汇总.md)
 - [x] [Chrome常用插架](https://github.com/Rocks526/Java-Notes/blob/master/docs/其他/Chrome常用插架.md)
 
+## 分布式
+
+- [ ] [分布式共识算法](https://github.com/Rocks526/Java-Notes/blob/master/docs/分布式/分布式共识算法.md)
+- [ ] [分布式事务](https://github.com/Rocks526/Java-Notes/blob/master/docs/分布式/分布式事务.md)
+- [ ] [分布式ID](https://github.com/Rocks526/Java-Notes/blob/master/docs/分布式/分布式ID.md)
+- [ ] [分布式锁](https://github.com/Rocks526/Java-Notes/blob/master/docs/分布式/分布式锁.md)
 
 ## 大数据
 

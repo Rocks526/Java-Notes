@@ -10,12 +10,12 @@
 
 ## Java语言
 
-- [x] [Java常见关键字](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java常见关键字.md)
-- [x] [JavaIO体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/JavaIO体系结构.md)
-- [x] [Java异常体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java异常体系结构.md)
-- [x] [Java中的包装类](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java中的包装类.md)
-- [x] [Java枚举类型](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java枚举类型.md)
-- [x] [Java容器体系结构](https://github.com/Rocks526/Jdk8-Notes/blob/master/docs/Java/Java容器体系结构.md)
+- [x] [Java常见关键字](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java常见关键字.md)
+- [x] [JavaIO体系结构](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/JavaIO体系结构.md)
+- [x] [Java异常体系结构](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java异常体系结构.md)
+- [x] [Java中的包装类](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java中的包装类.md)
+- [x] [Java枚举类型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java枚举类型.md)
+- [x] [Java容器体系结构](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java容器体系结构.md)
 - [x] [Java并发编程](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java并发编程.md)
 - [x] [Java反射](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java反射.md)
 - [x] [Java注解](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java注解.md)

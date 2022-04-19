@@ -1,514 +1,217 @@
-- [tips](#tips)
-- [String](#String)
-- [Integer](#Integer)
+# 一：Java包装类介绍
 
-# <a id="tips">tips</a>
+### 1.1 Java包装类介绍
 
-> Java早期为了保持和其他语言的一致性，内置了八种基础数据类型，但为了符合Java面向对象的思想，Java对这八种基本数据类型进行了包装，形成了对应的包装类，他们之间的对应关系如下：
->
-> - byte       ---     Byte   ---   1字节
-> - short     ---     Short   ---   2字节
-> - int          ---     Integer   ---   4字节
-> - long       ---     Long   ---   8字节
-> - float       ---     Float   ---   4字节
-> - double   ---     Double  ---  8字节  
-> - boolean ---     Boolean  ---   1字节
-> - char        ---    String   ---   2字节
+Java早期为了`保持和其他语言的一致性，内置了八种基础数据类型`，但为了`符合Java面向对象的思想，Java对这八种基本数据类型进行了包装，形成了对应的包装类`，他们之间的对应关系如下：
 
-# <a id="String">String</a>
+| 基本类型 | 包装类型  | 长度  |
+| -------- | --------- | ----- |
+| byte     | Byte      | 1字节 |
+| short    | Short     | 2字节 |
+| int      | Integer   | 4字节 |
+| long     | Long      | 8字节 |
+| float    | Float     | 4字节 |
+| double   | Double    | 8字节 |
+| boolean  | Boolean   | 1字节 |
+| char     | Character | 2字节 |
 
-## String类介绍
+### 1.2 包装类和基本类型的区别
 
-![image-20210114195445003](http://rocks526.top/lzx/image-20210114195445003.png)
+在Java语言中，对象的分配都是在堆上，方法执行的虚拟机栈通过引用去寻找堆上的对象进行操作。
 
-```java
-public final class String
-    implements java.io.Serializable, Comparable<String>, CharSequence {
-}
-```
+因此对于基本类型，是直接分配在栈帧的局部变量表里，而包装类型是分配在堆里，局部变量表里存储对象的引用。
 
-String的类图如上所示，继承自Object，实现了Serializable，Comparable，CharSequence接口：
+因此基本类型相比包装类型，性能会更好一些，在一些追求极致性能的场景，可以使用基本类型，例如Netty。反之，在绝大多数场景下，都可以优先使用包装类型，`通过少量的性能损耗换取编码上的效率提升还是值得的`。
 
-- Serializable接口：Java序列化接口，实现String的序列化
-  - 无实际意义，作为序列化的语义标识
-  - 序列化时未实现此接口则抛出NotSerializableException
-  - 通过readObject和writeObject方法实现序列化和反序列化
-- Comparable接口：Java排序接口，实现String的大小比较
-  - 实现此接口，重写compareTo方法可以进行大小比较
-  - 返回负数：小于比较对象
-  - 返回0：等于比较对象
-  - 返回正数：大于比较对象
-- CharSequence接口：字符通用接口，实现一些字符通用操作，如length，charAt等，Jdk8加入了一些lambda流的default方法
+### 1.3 Java包装类和基本类型的转换
 
-String类注释说明如下：
-
-- String类表示字符串，全部Java中的字符串文本都是此类的实例实现
-- 字符串是常量，被创建出来之后放入常量池里
-- 此类提供了很多字符串的相关操作，字符串可以通过"+"拼接
-- 字符串默认编码UTF-16
-
-> String是不可变的，创建后会放在常量池里，当修改字符串时，改变的是字符串的引用，底层是通过在从常量池里查找要创建的字符串，如果有则返回地址，如果没有则新建。
->
-> 由于字符串在程序中使用非常广泛，如果每次都创建新对象会消耗非常多内存，而此种方案每个字符串只会创建一个实例，主要用于节省内存。
->
-> String语法层面如何做到不可变？
->
-> - final修饰String类，不可被继承
-> - String通过一个char数组存储数据，该属性修饰为private final类型，表明该属性地址不可变，而且外部不可修改。
->
-> 由于String的不可变性，String的大部分操作返回的都是一个新字符串。
-
-## String类属性
-
-![image-20210115102312381](http://rocks526.top/lzx/image-20210115102312381.png)
-
-****
-
-**value**
+Java的包装类型都提供了和基本类型相互转换的方法，基本都是`valueOf()`和`xxxxValue()`系列，示例如下：
 
 ```java
-    private final char value[];
-```
+package com.lizhaoxuan.lang;
 
-底层通过char数组存储String的数据，修饰为private，final类型：
-
-- 外部不可访问
-- 地址不可变
-
-****
-
-**hash**
-
-```java
-    private int hash; // Default to 0
-```
-
-缓存String的hash值，用于快速检测字符串是否存在，默认0。
-
-****
-
-**serialVersionUID**
-
-```java
-    private static final long serialVersionUID = -6849794470754667710L;
-```
-
-序列化ID，用于序列化和反序列化安全。
-
-****
-
-**serialPersistentFields**
-
-```java
-    private static final ObjectStreamField[] serialPersistentFields =
-        new ObjectStreamField[0];
-```
-
-序列化相关处理。
-
-****
-
-**CASE_INSENSITIVE_ORDER**
-
-```java
-public static final Comparator<String> CASE_INSENSITIVE_ORDER = new CaseInsensitiveComparator();
-    private static class CaseInsensitiveComparator
-            implements Comparator<String>, java.io.Serializable {
-        // use serialVersionUID from JDK 1.2.2 for interoperability
-        private static final long serialVersionUID = 8575799808933029326L;
-
-        public int compare(String s1, String s2) {
-            int n1 = s1.length();
-            int n2 = s2.length();
-            int min = Math.min(n1, n2);
-            for (int i = 0; i < min; i++) {
-                char c1 = s1.charAt(i);
-                char c2 = s2.charAt(i);
-                if (c1 != c2) {
-                    c1 = Character.toUpperCase(c1);
-                    c2 = Character.toUpperCase(c2);
-                    if (c1 != c2) {
-                        c1 = Character.toLowerCase(c1);
-                        c2 = Character.toLowerCase(c2);
-                        if (c1 != c2) {
-                            // No overflow because of numeric promotion
-                            return c1 - c2;
-                        }
-                    }
-                }
-            }
-            return n1 - n2;
-        }
-
-        /** Replaces the de-serialized object. */
-        private Object readResolve() { return CASE_INSENSITIVE_ORDER; }
-    }
-```
-
-String的一个内部类，实现Comparable接口，实现String的大小比较，由源码可以看出，比较时忽略大小写。
-
-> String本身也实现了Comparable接口，可以进行大小比较，compareTo方法可以看出比较是不忽略大小写的，因此String又提供了一个忽略大小写的比较器，通过compareToIgnoreCase方法调用该比较器进行大小写忽略的比较。
-
-## String类方法
-
-> 由于String方法众多且都较为简单，以下只列出一些常见的方法。
-
-****
-
-**构造方法**
-
-![image-20200320151110307](http://rocks526.top/lzx/image-20200320151110307.png)
-
-String拥有很多构造方法，可以通过以下方式创建：
-
-- 空参：空字符串，value为""，hash为0
-- String：使用传入String的hash和value
-- char数组：使用Arrays工具类完成数组拷贝
-- byte数组：可以指定采用的编码格式，可以指定数组部分内容
-- int数组：可以指定数组部分内容
-- StringBuffer
-
-****
-
-> 由于String的API众多，都是对数组操作的一些封装，源码较为简单，因此不列举源码，只总结常用API的作用。
-
-- length：返回字符串长度，即数组长度。
-- isEmpty：判断字符串是否为空。
-- charAt：返回指定下标的字符。
-- getBytes：将String转换byte数组，指定编码格式。
-- equals：字符串等于判断，如果地址相等则true，否则转换为String类型，挨个字符比较，不忽略大小写。
-- contentEquals：字符内容比较。
-- equalsIgnoreCase：忽略大小写比较。
-- compareTo：实现Comparable接口，重写的方法，默认比较方案，不忽略大小写比较。
-- compareToIgnoreCase：大小写忽略比较，采用内部类的方式实现一个忽略大小写的比较器。
-- startsWiths：字符是否以指定索引开头
-- endsWith：字符串是否以指定索引结尾
-- hashCode：String的Hash算法。
-- indexOf：根据下标获取字符。
-- lastIndexOf：获取指定字符的最后索引下标。
-- substring：字符串分片，传入起始参数和截止参数，只有一个参数时切割到末尾
-- concat：将指定字符串连接至末尾
-- replace：字符串替换，只替换一个
-- replaceFirst：替换第一个
-- replaceAll：全部替换
-- split：字符串根据指定分隔符分割
-- toLowerCase：字符串转换小写
-- toUpperCase：字符串转换大写
-- toString：字符串输出
-- toCharArray：转换char数组
-- valueOf：将其他对象转换为字符串，调用该对象的toString
-- trim：去除字符串首尾空格
-- intern：从常量池获得该字符串的地址
--  join：将多个字符序列根据某个分隔符连接
--  trim：去掉字符串左右两侧的空格
--  format：Jdk1.5之后新增的字符串格式化
--  copyValueOf：拷贝某个字符串的部分内容
-
-## String && StringBuffer && StringBuilder
-
-可变性：
-
- - String 不可变
- - StringBuffer 和 StringBuilder 可变
-
-线程安全：
-
- - String 不可变，因此是线程安全的
- - StringBuilder 不是线程安全的
- - StringBuffer 是线程安全的，内部使用 synchronized 进行同步
-
-## String Pool
-
-字符串常量池（String Pool）保存着所有字符串字面量（literal strings），这些字面量在编译时期就确定。不仅如此，还可以使用 String 的 intern() 方法在运行过程中将字符串添加到 String Pool 中。
-
-当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
-
-下面示例中，s1 和 s2 采用 new String() 的方式新建了两个不同字符串对象，而 s3 和 s4 是通过 s1.intern() 方法取得一个字符串引用。intern() 首先把 s1 引用的字符串放到 String Pool 中，然后返回这个字符串引用。因此 s3 和 s4 引用的是同一个字符串。
-
-```java
-package com.rocks.test.lang;
-
-public class StringTest {
+/**
+ * 包装类型测试
+ * @author lizhaoxuan
+ */
+public class WrapperClassTest {
 
     public static void main(String[] args) {
-        // new String方式
-        String s1 = new String("Rocks");
-        String s2 = new String("Rocks");
-        // 堆里两个对象 引用不相等 这两个对象的引用都指向常量池的Rocks
-        System.out.println(s1 == s2);  // false
+        // int
+        int x = 1;
+        Integer wrapperX = Integer.valueOf(x);
+        int x2 = wrapperX.intValue();
+        System.out.println(x + "," + wrapperX + "," + x2);
 
-        // intern方式  都是从字符串常量池取 因此引用相等
-        String s3 = "Rocks526".intern();
-        String s4 = "Rocks526".intern();
-        System.out.println(s3 == s4);   // true
+        // long
+        long v = 2l;
+        Long wrapperV = Long.valueOf(v);
+        long v2 = wrapperV.longValue();
+        System.out.println(v + "," + wrapperV + "," + v2);
 
-        // 直接声明方式  直接放入常量池 也相等
-        String s5 = "Rocks666";
-        String s6 = "Rocks666";
-        System.out.println(s5 == s6);  // true
+        // double
+        double m = 0.2f;
+        Double wrapperM = Double.valueOf(m);
+        double m2 = wrapperM.doubleValue();
+        System.out.println(m + "," + wrapperM + "," + m2);
 
+        // float
+        float n = 0.8f;
+        Float wrapperN = Float.valueOf(n);
+        float n2 = wrapperN.floatValue();
+        System.out.println(n + "," + wrapperN + "," + n2);
+
+        // bool
+        boolean p = false;
+        Boolean wrapperP = Boolean.valueOf(p);
+        boolean p2 = wrapperP.booleanValue();
+        System.out.println(p + "," + wrapperP + "," + p2);
+
+        // str
+        char o = 'p';
+        Character wrapperO = Character.valueOf(o);
+        char o2 = wrapperO.charValue();
+        System.out.println(o + "," + wrapperO + "," + o2);
+
+        // short
+        short c = 2;
+        Short wrapperC = Short.valueOf(c);
+        short c2 = wrapperC.shortValue();
+        System.out.println(c + "," + wrapperC + "," + c2);
+
+        // byte
+        byte z = 'm';
+        Byte wrapperZ = Byte.valueOf(z);
+        byte z2 = wrapperZ.byteValue();
+        System.out.println(z + "," + wrapperZ + "," + z2);
     }
+
 }
 ```
 
-在 Java 7 之前，String Pool 被放在运行时常量池中，它属于永久代。而在 Java 7，String Pool 被移到堆中。这是因为永久代的空间有限，在大量使用字符串的场景下会导致 OutOfMemoryError 错误。
+### 1.4 Java包装类的缓存机制
 
-> String的intern方法在Jdk6和Jdk7之间有区别，主要区别在于new String方式，当常量池不存在字符串时，Jdk6会拷贝一份字符串放到常量池，因此new 出来的String引用地址和常量池中返回的不相等，在Jdk7时，会将new的String引用直接放入常量池，因此相等。
->
-> 参考：https://blog.csdn.net/qq_42191317/article/details/96439454
-
-# <a id="Integer">Integer</a>
-
-## Integer类介绍
-
-![image-20210115110609425](http://rocks526.top/lzx/image-20210115110609425.png)
+在介绍包装类的缓存机制之前，先看下下面的测试代码：
 
 ```java
-public final class Integer extends Number implements Comparable<Integer> {}
-```
-
-Integer类图如上所示，继承自Object和Number，实现了Serializable和Comparable接口：
-
-- Serializable接口：Java序列化接口
-- Comparable接口：比较排序接口
-- Number类：数字类超类，定义数字之间的转换方法
-
-## Integer类属性
-
-![image-20210115110944219](http://rocks526.top/lzx/image-20210115110944219.png)
-
-****
-
-**MIN_VALUE**
-
-```java
-    @Native public static final int   MIN_VALUE = 0x80000000;
-```
-
- Integer表示范围的最小值，十进制为-2^31
-
-****
-
-**MAX_VALUE**
-
-```java
-    @Native public static final int   MAX_VALUE = 0x7fffffff;
-```
-
- Integer表示范围的最大值，十进制为2^32-1
-
-****
-
-**IntegerCache**
-
-```java
-    /**
-     * Integer内部缓存  缓存-128到127
-     */
-    private static class IntegerCache {
-        static final int low = -128;
-        static final int high;
-        static final Integer cache[];
-
-        static {
-            // high value may be configured by property
-            int h = 127;
-            String integerCacheHighPropValue =
-                sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high");
-            if (integerCacheHighPropValue != null) {
-                try {
-                    int i = parseInt(integerCacheHighPropValue);
-                    i = Math.max(i, 127);
-                    // Maximum array size is Integer.MAX_VALUE
-                    h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
-                } catch( NumberFormatException nfe) {
-                    // If the property cannot be parsed into an int, ignore it.
-                }
-            }
-            high = h;
-
-            cache = new Integer[(high - low) + 1];
-            int j = low;
-            for(int k = 0; k < cache.length; k++)
-                cache[k] = new Integer(j++);
-
-            // range [-128, 127] must be interned (JLS7 5.1.7)
-            assert IntegerCache.high >= 127;
-        }
-
-        private IntegerCache() {}
+    private static void wrapperCache() {
+        System.out.println("=================[wrapperCache]=======================");
+        int v1 = 1;
+        int v2 = 288;
+        Integer v3 = Integer.valueOf(v1);
+        Integer v4 = Integer.valueOf(v2);
+        Integer v5 = Integer.valueOf(v1);
+        Integer v6 = Integer.valueOf(v2);
+        System.out.println(v1 + "," + v2 + "," + v3 + "," + v4 + "," + v5 + "," + v6);  // 1,288,1,288,1,288
+        System.out.println(v3 == v5);   // true
+        System.out.println(v4 == v6);   // false
     }
-
 ```
 
-Integer内部类，缓存-128到127范围的数字，当通过valueof方法获取Integer时会使用到缓存。
+Java中的每个对象都是独一无二的，等于号计算的是对象的引用地址，不同的对象应该都不一样。在上面的代码中，v3==v5返回的确实true。
 
-****
+这其实就是Java包装类的缓存机制，`Java包装类在加载的时候，会一次性创建出一些常用范围内的对象`，在执行valueOf()方法时，`先从创建好的对象里去获取，获取不到再创建新的对象`，这就是v3和v5是同一个对象，而v4和v6不是同一个对象的原因，Integer的缓存范围为[-128,127)。
 
-**TYPE**
+注：其他包装类型也有类似的缓存，具体的范围参考Java包装类型源码分析。
+
+# 二：自动拆箱装箱机制
+
+### 4.1 自动拆箱装箱介绍
+
+在Jdk1.5中，为了减少开发人员的工作，Java提供了自动拆装箱功能：
+
+- 自动装箱：将基本数据类型自动转化为对应的包装类
+- 自动拆箱：将包装类自动转化成对应的基本数据类型
+
+例如如下代码，就使用了自动装箱、拆箱机制：
 
 ```java
-    public static final Class<Integer>  TYPE = (Class<Integer>) Class.getPrimitiveClass("int");
+    private static void autoWrapper() {
+        System.out.println("=================[autoWrapper]=======================");
+        // int
+        int x = 1;
+        Integer wrapperX = x;
+        int x2 = wrapperX;
+        System.out.println(x + "," + wrapperX + "," + x2);
+
+        // long
+        long v = 2l;
+        Long wrapperV = v;
+        long v2 = wrapperV;
+        System.out.println(v + "," + wrapperV + "," + v2);
+
+        // double
+        double m = 0.2f;
+        Double wrapperM = m;
+        double m2 = wrapperM;
+        System.out.println(m + "," + wrapperM + "," + m2);
+
+        // float
+        float n = 0.8f;
+        Float wrapperN = n;
+        float n2 = wrapperN;
+        System.out.println(n + "," + wrapperN + "," + n2);
+
+        // bool
+        boolean p = false;
+        Boolean wrapperP = p;
+        boolean p2 = wrapperP;
+        System.out.println(p + "," + wrapperP + "," + p2);
+
+        // str
+        char o = 'p';
+        Character wrapperO = o;
+        char o2 = wrapperO;
+        System.out.println(o + "," + wrapperO + "," + o2);
+
+        // short
+        short c = 2;
+        Short wrapperC = c;
+        short c2 = wrapperC;
+        System.out.println(c + "," + wrapperC + "," + c2);
+
+        // byte
+        byte z = 'm';
+        Byte wrapperZ = z;
+        byte z2 = wrapperZ;
+        System.out.println(z + "," + wrapperZ + "," + z2);
+    }
 ```
 
-  返回class对象 基本类型为int
+### 4.2 自动拆箱装箱原理
 
-****
+自动拆箱和装箱是Java提供的一种语法糖，由编译器进行处理，帮助我们实现原本的逻辑。
 
-**digits**
+- 自动装箱都是通过包装类的valueOf()方法实现
+- 自动拆箱都是通过包装类对象xxxValue方法实现（如intValue）
+
+### 4.3 自动拆箱装箱应用
+
+- 将基本类型放入集合中
+
+集合类中都是对象类型，但是我们添加基本数据类型也不会报错，是因为Java给我们做了自动装箱。
+
+- 包装类型和基本类型的大小比较
+
+包装类与基本数据类型进行比较运算，先将包装类进行拆箱成基本数据类型，然后比较。
+
+- 包装类型的运算
+
+对两个包装类型进行算术运算运算，会将包装类型自动拆箱为基本类型进行。
+
+- 三目运算符的使用
+
+例如`falg? N + 1: N`这种三目运算符，会自动转为基本类型进行计算。
+
+- 函数参数与返回值
 
 ```java
-    final static char[] digits = {
-        '0' , '1' , '2' , '3' , '4' , '5' ,
-        '6' , '7' , '8' , '9' , 'a' , 'b' ,
-        'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
-        'i' , 'j' , 'k' , 'l' , 'm' , 'n' ,
-        'o' , 'p' , 'q' , 'r' , 's' , 't' ,
-        'u' , 'v' , 'w' , 'x' , 'y' , 'z'
-    };
+//自动拆箱
+public int getNum1(Integer num) {
+ return num;
+}
+//自动装箱
+public Integer getNum2(int num) {
+ return num;
+}
 ```
-
-将数字表示成char的所有可能字符 用于进制转换，int支持二进制到三十六进制(故需要36个字符)
-
-****
-
-**DigitTens**
-
-```java
-    final static char [] DigitTens = {
-        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-        '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
-        '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
-        '3', '3', '3', '3', '3', '3', '3', '3', '3', '3',
-        '4', '4', '4', '4', '4', '4', '4', '4', '4', '4',
-        '5', '5', '5', '5', '5', '5', '5', '5', '5', '5',
-        '6', '6', '6', '6', '6', '6', '6', '6', '6', '6',
-        '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
-        '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
-        '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
-        } ;
-```
-
-DigitTens和DigitOnes这两个常量数组主要是为了获取0到99之间某个数的十位和个位。
-
-****
-
-**DigitOnes**
-
-```java
-final static char [] DigitOnes = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        } ;
-```
-
-DigitTens和DigitOnes这两个常量数组主要是为了获取0到99之间某个数的十位和个位。
-
-****
-
-**sizeTable**
-
-```java
- final static int [] sizeTable = { 9, 99, 999, 9999, 99999, 999999, 9999999,99999999, 999999999, Integer.MAX_VALUE };
-```
-
-用于判断一个int类型数字对应字符串的长度
-
-****
-
-**value**
-
-```java
-    private final int value;
-```
-
-保存Integer类中的真实基本数据类型的值，final不可变
-
-****
-
-**SIZE**
-
-```java
-    @Native public static final int SIZE = 32;
-```
-
-静态常量SIZE用来表示二进制补码形式的int值的比特数，值为32
-
-****
-
-**BYTES**
-
-```java
-    public static final int BYTES = SIZE / Byte.SIZE;
-```
-
-静态常量BYTES表示二进制补码形式的int值得字节数
-
-****
-
-**serialVersionUID**
-
-```java
-    @Native private static final long serialVersionUID = 1360826667806852920L;
-```
-
-序列化ID
-
-****
-
-## Integer类方法
-
-> 由于Integer方法众多且都较为简单，以下只列出一些常见的方法。
-
-![image-20210115111334491](http://rocks526.top/lzx/image-20210115111334491.png)
-
-**构造函数**
-
-![image-20210115111408007](http://rocks526.top/lzx/image-20210115111408007.png)
-
-Integer可以通过int和String两种方式创建，用String创建时默认当做10进制处理。
-
-****
-
-**常用API**
-
--  toString：打印Int值，转为十进制输出
--  toHexString：转十六进制
--  toOctalString：转八进制
--  toBinaryString：转二进制
--  parseInt：将String转为有符号int，默认按十进制转，不会使用Integer缓存，返回int
--  valueOf：将String转为无符号int，默认按十进制转，会使用Integer缓存，返回Integer
--  byteValue：返回byte
--  shortValue：返回short
--  intValue：返回int
--  longValue：返回long
--  floatValue：返回float
--  doubleValue：返回double
--  equals：先比较地址 在比较Integer
--  getInteger：返回系统常量的int值,类似System.getProperty(str)
--  decode：解码字符串转成Integer型对象
--  compareTo：比较，负数小于 正数大于
--  compare：比较传入两个数的大小
--  compareUnsigned：无符号比较
--  reverse：反转
-
-****
-
-> Integer主要提供了以下功能：
->
-> - 和其他数字相互转换的方法
-> - 进制之间的转换方法
-> - 和String转换时推荐使用valueOf方法，提供部分缓存
->
-> Long，Double等其他包装类与Integer基本类似，不做一一介绍，都是对基本数据类型进行一层包装，提供多种构造函数，不同数据类型之间的转换计算等操作，提供部分缓存能力，通过valueOf方法可以使用。
-
-
-

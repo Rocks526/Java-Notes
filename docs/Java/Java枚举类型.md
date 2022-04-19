@@ -1,21 +1,18 @@
-- [tips](#tips)
-- [枚举基础](#js)
-- [枚举集合](#jh)
-- [枚举原理](#yl)
+# 一：枚举介绍
 
-# <a id="tips">tips</a>
+在Java中定义一些常量一般使用static fianl来实现，在Jdk1.5之后，Java推出了枚举类型，`通过枚举类型可以实现常量的定义以及一些只有固定值的变量定义`。
 
-> 在Java中定义一些常量一般使用static fianl来实现，在Jdk1.5之后，Java推出了枚举类型，通过枚举类型可以实现常量的定义以及一些只有固定值的变量定义。
->
-> 枚举类型适合场景：
->
-> - 常量
-> - 有固定值的变量，如星期，颜色等
-> - 系统返回状态码以及异常种类
+枚举类型适合场景：
 
-# <a id="js">枚举基础</a>
+- 常量
 
-- 利用枚举类型定义常量
+- 有固定值的变量，如星期，颜色等
+
+- 系统返回状态码以及异常种类
+
+# 二：枚举基础
+
+### 2.1 利用枚举类型定义常量
 
 ```java
 public enum Color {
@@ -31,8 +28,9 @@ public enum Color {
     }
 ```
 
-- 枚举类型结合switch
-  - 在Jdk1.6之后，switch支持enum类型
+### 2.2 枚举类型结合switch
+
+- 在Jdk1.6之后，switch支持enum类型
 
 ```java
     public static void main(String[] args) {
@@ -54,8 +52,9 @@ public enum Color {
     }
 ```
 
-- 枚举类型里自定义属性，方法，重写父类方法
-  - 构造方法不能为public
+### 2.3 枚举类型里自定义属性，方法，重写父类方法
+
+- 构造方法不能为public
 
 ```java
 public enum  GlobalException {
@@ -93,18 +92,18 @@ public static void main(String[] args) {
     }
 ```
 
-> 枚举类里每个成员其实是继承于Java中的Enum类，因此枚举类不可再继承其他类，但可以实现接口，通过接口组织枚举结构。
+注：`枚举类里每个成员其实是继承于Java中的Enum类，因此枚举类不可再继承其他类，但可以实现接口，通过接口组织枚举结构`。
 
-# <a id="jh">枚举集合的使用</a>
+# 三：枚举集合的使用
+
+### 3.1 枚举集合介绍
 
 除了基础枚举类型之外，Java还提供了EunmMap和EnumSet两个枚举集合工具类供我们使用，位于java.util包下，两者的功能如下：
 
 - EnumSet保证集合中的元素不重复
 - EnumMap中的 key是enum类型，而value则可以是任意类型
 
-****
-
-**EnumSet**
+### 3.2 EnumSet
 
 ```java
     public static void main(String[] args) {
@@ -140,7 +139,7 @@ Exception is :1002--->用户密码错误
 [Exception is :1001--->用户未登录异常]
 ```
 
-**EnumMap**
+### 3.3 EnumMap
 
 ```java
 public static void main(String[] args) {
@@ -172,17 +171,17 @@ public static void main(String[] args) {
 {Exception is :1002--->用户密码错误=用户密码错误！}
 ```
 
-# <a id="yl">枚举原理</a>
+# 四：枚举原理
+
+### 4.1 枚举原理介绍
 
 枚举类和泛型一样，都是编译器的一种语法糖，当一个枚举类型被编译后，会经过以下处理：
 
-- 将枚举类型定义为抽象类，并继承自Enum基类
-- 将成员变量定义为枚举类型，并修饰为final static，同样继承自Enum基类，拥有Enum基类的方法
-- 重写writeObject，readObject和clone方法，修饰为final类型，这三个方法和枚举通过静态代码块一块进行初始化，保证了枚举类型的不可变性，不能通过克隆，序列化和反序列化来复制，保证枚举常量只有一个实例，即单例。因此推荐使用枚举类型实现单例模式
+- 将枚举类型定义为`抽象类，并继承自Enum基类`
+- 将成员变量定义为`枚举类型，并修饰为final static，同样继承自Enum基类`，拥有Enum基类的方法
+- `重写writeObject，readObject和clone方法，修饰为final类型`，这三个方法和枚举通过静态代码块一块进行初始化，保证了枚举类型的不可变性，不能通过克隆，序列化和反序列化来复制，保证枚举常量只有一个实例，即单例。因此`推荐使用枚举类型实现单例模式`
 
-****
-
-**Enum类**
+### 4.2 Enum类
 
 ```java
 public abstract class Enum<E extends Enum<E>>

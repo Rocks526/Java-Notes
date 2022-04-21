@@ -1,4 +1,4 @@
-# 基础原理篇
+# 基础篇
 
 [Java基础介绍](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm基础介绍.md)
 
@@ -18,6 +18,10 @@
 
 [Arthas工具](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Arthas工具.md)
 
+[jar命令之动态替换类文件](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/jar命令之动态替换类文件.md)
+
 [GC优化实战](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/GC优化实战.md)
 
 [ASM字节码开发](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/ASM字节码开发.md)
+
+

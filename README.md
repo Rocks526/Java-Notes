@@ -109,9 +109,8 @@
 - [ ] [Gradle](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Gradle.md)
 - [ ] [Jenkins](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Jekins.md)
 - [ ] [Postman](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Postman.md)
-- [ ] [JMeter](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/JMeter.md)
+- [x] [JMeter](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/JMeter.md)
 - [ ] [LoadRunner](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/LoadRunner.md)
-- [ ] [Zabbix](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Zabbix.md)
 - [ ] [Prometheus](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Prometheus.md)
 
 ## 其他

@@ -12,13 +12,23 @@
 
 # 实践篇
 
+[Jvm常用命令参数总结](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm常用命令参数总结.md)
+
 [Jvm常用命令行分析工具](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm常用命令行分析工具.md)
+
+[jvisualVM工具](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/jvisualVM工具.md)
+
+[jConsole工具](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/jConsole工具.md)
 
 [MAT工具](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/MAT工具.md)
 
 [Arthas工具](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Arthas工具.md)
 
-[jar命令之动态替换类文件](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/jar命令之动态替换类文件.md)
+[巧用Jar命令修改Jar包内容](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/jar命令之动态替换类文件.md)
+
+[Java进程的CPU飙升定位实战](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/GC优化实战.md)
+
+[OOM定位实战](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/GC优化实战.md)
 
 [GC优化实战](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/GC优化实战.md)
 

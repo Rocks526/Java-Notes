@@ -81,7 +81,7 @@ java -Xms1g -Xmx1g -jar jvm-0.0.1-SNAPSHOT.jar
 
 Jdk命令行工具在连接Jvm进程时，有可能出现如下错误：
 
-![image-20220422101523168](C:\Users\lizhaoxuan\AppData\Roaming\Typora\typora-user-images\image-20220422101523168.png)
+![image-20220422101523168](http://rocks526.top/lzx/image-20220422101523168.png)
 
 这个错误一般是因为连接到的进程非Java，可能是进程号写错了，或者是Linux内核的`kernel.yama.ptrace_scope`禁止在运行时连接进程，可以通过`sysctl -n kernel.yama.ptrace_scope`查看，0代表允许，1代表禁止。
 

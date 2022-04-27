@@ -1,14 +1,14 @@
 # 基础篇
 
-[Java基础介绍](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm基础介绍.md)
+[Jvm基础介绍](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm基础介绍.md)
 
-[Java自动内存管理](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm内存区域划分.md)
+[Jvm内存管理](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm内存管理.md)
 
-[Java执行系统](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm类文件结构.md)
+[Jvm执行系统](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm执行系统.md)
 
-[Java编译与优化](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm类加载机制.md)
+[Jvm编译优化](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm编译优化.md)
 
-[Java并发模型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm常用监控工具.md)
+[Jvm并发模型](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/Jvm并发模型.md)
 
 # 实践篇
 
@@ -33,5 +33,3 @@
 [GC优化实战](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/GC优化实战.md)
 
 [ASM字节码开发](https://github.com/Rocks526/Java-Notes/blob/master/docs/Java/Java虚拟机/ASM字节码开发.md)
-
-

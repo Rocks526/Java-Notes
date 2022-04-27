@@ -103,14 +103,8 @@
 
 - [x] [Typora](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Typora.md)
 - [x] [IDEA](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/IDEA.md)
-- [x] [Docker](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Docker.md)
-- [ ] [Git](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Git.md)
-- [ ] [Maven](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Maven.md)
-- [ ] [Gradle](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Gradle.md)
-- [ ] [Jenkins](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Jekins.md)
-- [ ] [Postman](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Postman.md)
+- [x] [Docker&Kubernetes](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Docker&Kubernetes.md)
 - [x] [JMeter](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/JMeter.md)
-- [ ] [LoadRunner](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/LoadRunner.md)
 - [ ] [Prometheus](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Prometheus.md)
 
 ## 其他

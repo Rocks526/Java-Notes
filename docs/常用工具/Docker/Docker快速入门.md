@@ -950,6 +950,156 @@ root                4391                1966                0                   
 
 - 拉取镜像
 
+```bash
+[root@VM-12-2-centos ~]# docker pull mysql:5.7
+..................................................................................................
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+hello-world-x   latest    5aa5faee7296   8 days ago      13.3kB
+redis           latest    3c3da61c4be0   2 weeks ago     113MB
+mysql           5.7       82d2d47667cf   2 weeks ago     450MB
+hello-world     latest    feb5d9fea6a5   7 months ago    13.3kB
+redis           6.0.8     16ecd2772934   18 months ago   104MB
+```
+
+- 创建容器
+
+```shell
+[root@VM-12-2-centos ~]# docker run -di -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:5.7
+0b780160d431e3bcb5950f791e73beaf72e2aaacf86d77d6a2ca42517fd1e0ad
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS                                                  NAMES
+0b780160d431   mysql:5.7   "docker-entrypoint.s…"   5 seconds ago   Up 4 seconds   33060/tcp, 0.0.0.0:3310->3306/tcp, :::3310->3306/tcp   relaxed_khorana
+69e5ce02db61   redis       "docker-entrypoint.s…"   8 days ago      Up 8 days      0.0.0.0:6380->6379/tcp, :::6380->6379/tcp              redis-server
+```
+
+- 命令行登录
+
+```shell
+[root@VM-12-2-centos ~]# docker exec -it 0b780160d431 /bin/bash
+root@0b780160d431:/# 
+root@0b780160d431:/# mysql
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+root@0b780160d431:/# mysql -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 3
+Server version: 5.7.37 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show tables;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+```
+
+### 4.2 Docker部署Redis
+
+- 拉取镜像
+
+```shell
+[root@VM-12-2-centos ~]# docker pull redis:6.0.8
+6.0.8: Pulling from library/redis
+bb79b6b2107f: Pull complete 
+1ed3521a5dcb: Pull complete 
+5999b99cee8f: Pull complete 
+3f806f5245c9: Pull complete 
+f8a4497572b2: Pull complete 
+eafe3b6b8d06: Pull complete 
+Digest: sha256:21db12e5ab3cc343e9376d655e8eabbdbe5516801373e95a8a9e66010c5b8819
+Status: Downloaded newer image for redis:6.0.8
+docker.io/library/redis:6.0.8
+```
+
+- 创建容器
+
+```shell
+[root@VM-12-2-centos lzx]# docker run -di --name=redis-server -p 6380:6379 redis
+69e5ce02db614427a8c47af05f9b05ee3e3e76efdf4b2f8a1db08f7c6bdf4373
+[root@VM-12-2-centos lzx]# docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS                                       NAMES
+69e5ce02db61   redis     "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:6380->6379/tcp, :::6380->6379/tcp   redis-server
+[root@VM-12-2-centos lzx]# netstat -tunlp | grep 6380
+tcp        0      0 0.0.0.0:6380            0.0.0.0:*               LISTEN      29254/docker-proxy  
+tcp6       0      0 :::6380                 :::*                    LISTEN      29260/docker-proxy
+```
+
+- 命令行登录
+
+```shell
+[root@VM-12-2-centos lighthouse]# docker exec -it 69e5ce02db61 redis-cli
+127.0.0.1:6379> 
+127.0.0.1:6379> get key
+(nil)
+127.0.0.1:6379> set key value1
+OK
+127.0.0.1:6379> get key
+"value1"
+127.0.0.1:6379> 
+```
+
+### 4.3 Docker部署Nginx
+
+- 拉取镜像
+
+```shell
+[root@VM-12-2-centos ~]# docker pull nginx
+Using default tag: latest
+latest: Pulling from library/nginx
+1fe172e4850f: Already exists 
+35c195f487df: Pull complete 
+213b9b16f495: Pull complete 
+a8172d9e19b9: Pull complete 
+f5eee2cb2150: Pull complete 
+93e404ba8667: Pull complete 
+Digest: sha256:859ab6768a6f26a79bc42b231664111317d095a4f04e4b6fe79ce37b3d199097
+Status: Downloaded newer image for nginx:latest
+docker.io/library/nginx:latest
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+hello-world-x   latest    5aa5faee7296   9 days ago      13.3kB
+redis           latest    3c3da61c4be0   2 weeks ago     113MB
+nginx           latest    fa5269854a5e   2 weeks ago     142MB
+mysql           5.7       82d2d47667cf   2 weeks ago     450MB
+hello-world     latest    feb5d9fea6a5   7 months ago    13.3kB
+redis           6.0.8     16ecd2772934   18 months ago   104MB
+```
+
+- 创建容器
+
+```shell
+[root@VM-12-2-centos ~]# docker run -di --name=web-server -p 443:443 -p 80:80 nginx
+ce5f7383ae2aa9e2dc989daafade85e001f16d9ed1e686c9a462533c9c8079bd
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED         STATUS         PORTS                                                                      NAMES
+ce5f7383ae2a   nginx       "/docker-entrypoint.…"   2 seconds ago   Up 1 second    0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7   "docker-entrypoint.s…"   5 minutes ago   Up 5 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis       "docker-entrypoint.s…"   8 days ago      Up 8 days      0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+```
+
+- 访问测试
+
+![image-20220506160658578](http://rocks526.top/lzx/image-20220506160658578.png)
+
+### 4.4 Docker部署Tomcat
+
+- 拉取镜像
+
 ```shell
 
 ```
@@ -960,31 +1110,7 @@ root                4391                1966                0                   
 
 ```
 
-- 命令行登录
-
-```shell
-
-```
-
-- 远程登录
-
-```shell
-
-```
-
-### 4.2 Docker部署Redis
-
-
-
-### 4.3 Docker部署Nginx
-
-
-
-### 4.4 Docker部署Tomcat
-
-
-
-### 4.5 Docker部署SpringBoot
+- 访问测试
 
 
 
@@ -994,19 +1120,299 @@ root                4391                1966                0                   
 
 # 五：镜像制作
 
-### 5.1 制作SSH镜像
+### 5.1 制作CentOS镜像
+
+Centos官方的镜像为了瘦身，删除了很多不必要的软件，例如vim，net-tools，ssh等，因此制作一个包含基础工具的CentOS镜像。
+
+- 拉取官方镜像
+
+```shell
+[root@VM-12-2-centos ~]# docker pull centos:7.4
+Error response from daemon: manifest for centos:7.4 not found: manifest unknown: manifest unknown
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker pull centos:7
+7: Pulling from library/centos
+2d473b07cdd5: Pull complete 
+Digest: sha256:c73f515d06b0fa07bb18d8202035e739a494ce760aa73129f60f4bf2bd22b407
+Status: Downloaded newer image for centos:7
+docker.io/library/centos:7
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+hello-world-x   latest    5aa5faee7296   9 days ago      13.3kB
+redis           latest    3c3da61c4be0   2 weeks ago     113MB
+nginx           latest    fa5269854a5e   2 weeks ago     142MB
+mysql           5.7       82d2d47667cf   2 weeks ago     450MB
+hello-world     latest    feb5d9fea6a5   7 months ago    13.3kB
+centos          7         eeb6ee3f44bd   7 months ago    204MB
+redis           6.0.8     16ecd2772934   18 months ago   104MB
+```
+
+- 运行容器
+
+```shell
+[root@VM-12-2-centos ~]# docker run --name=my-centos -tdi --privileged=true -p 442:22 centos:7 /usr/sbin/init
+8e06432c4f995485f97f57356462b9ba18c0a495a5e67d37f363e8adcbe2c1c8
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                                                                      NAMES
+8e06432c4f99   centos:7    "/bin/bash"              3 seconds ago    Up 2 seconds    0.0.0.0:422->22/tcp, :::422->22/tcp                                        beautiful_saha
+ce5f7383ae2a   nginx       "/docker-entrypoint.…"   14 minutes ago   Up 14 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7   "docker-entrypoint.s…"   20 minutes ago   Up 20 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis       "docker-entrypoint.s…"   8 days ago       Up 8 days       0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+[root@VM-12-2-centos ~]# docker exec -it 8e06432c4f99 /bin/bash
+[root@8e06432c4f99 /]# 
+```
+
+- 安装vim
+
+```shell
+[root@8e06432c4f99 /]# yum -y install vim
+Loaded plugins: fastestmirror, ovl
+Determining fastest mirrors
+ * base: mirrors.nju.edu.cn
+ * extras: ftp.sjtu.edu.cn
+ * updates: ftp.sjtu.edu.cn
+
+Installed:
+  vim-enhanced.x86_64 2:7.4.629-8.el7_9                                                                                                                                    
+
+Dependency Installed:
+  gpm-libs.x86_64 0:1.20.7-6.el7                groff-base.x86_64 0:1.22.2-8.el7       perl.x86_64 4:5.16.3-299.el7_9           perl-Carp.noarch 0:1.26-244.el7          
+  perl-Encode.x86_64 0:2.51-7.el7               perl-Exporter.noarch 0:5.68-3.el7      perl-File-Path.noarch 0:2.09-2.el7       perl-File-Temp.noarch 0:0.23.01-3.el7    
+  perl-Filter.x86_64 0:1.49-3.el7               perl-Getopt-Long.noarch 0:2.40-3.el7   perl-HTTP-Tiny.noarch 0:0.033-3.el7      perl-PathTools.x86_64 0:3.40-5.el7       
+  perl-Pod-Escapes.noarch 1:1.04-299.el7_9      perl-Pod-Perldoc.noarch 0:3.20-4.el7   perl-Pod-Simple.noarch 1:3.28-4.el7      perl-Pod-Usage.noarch 0:1.63-3.el7       
+  perl-Scalar-List-Utils.x86_64 0:1.27-248.el7  perl-Socket.x86_64 0:2.010-5.el7       perl-Storable.x86_64 0:2.45-3.el7        perl-Text-ParseWords.noarch 0:3.29-4.el7 
+  perl-Time-HiRes.x86_64 4:1.9725-3.el7         perl-Time-Local.noarch 0:1.2300-2.el7  perl-constant.noarch 0:1.27-2.el7        perl-libs.x86_64 4:5.16.3-299.el7_9      
+  perl-macros.x86_64 4:5.16.3-299.el7_9         perl-parent.noarch 1:0.225-244.el7     perl-podlators.noarch 0:2.5.1-3.el7      perl-threads.x86_64 0:1.87-4.el7         
+  perl-threads-shared.x86_64 0:1.43-6.el7       vim-common.x86_64 2:7.4.629-8.el7_9    vim-filesystem.x86_64 2:7.4.629-8.el7_9  which.x86_64 0:2.20-7.el7                
+
+Complete!
+```
+
+- 安装net-tools
+
+```shell
+[root@8e06432c4f99 /]# yum -y install net-tools
+Loaded plugins: fastestmirror, ovl
+Loading mirror speeds from cached hostfile
+ * base: mirrors.nju.edu.cn
+ * extras: ftp.sjtu.edu.cn
+ * updates: ftp.sjtu.edu.cn
+Resolving Dependencies
+--> Running transaction check
+---> Package net-tools.x86_64 0:2.0-0.25.20131004git.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+===========================================================================================================================================================================
+ Package                                Arch                                Version                                                Repository                         Size
+===========================================================================================================================================================================
+Installing:
+ net-tools                              x86_64                              2.0-0.25.20131004git.el7                               base                              306 k
+
+Transaction Summary
+===========================================================================================================================================================================
+Install  1 Package
+
+Total download size: 306 k
+Installed size: 917 k
+Downloading packages:
+net-tools-2.0-0.25.20131004git.el7.x86_64.rpm                                                                                                       | 306 kB  00:00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : net-tools-2.0-0.25.20131004git.el7.x86_64                                                                                                               1/1 
+  Verifying  : net-tools-2.0-0.25.20131004git.el7.x86_64                                                                                                               1/1 
+
+Installed:
+  net-tools.x86_64 0:2.0-0.25.20131004git.el7                                                                                                                              
+
+Complete!
+```
+
+- 安装SSH
+
+```shell
+[root@8e06432c4f99 /]# yum -y install openssh-server
+........................................................................
+Installed:
+  openssh-server.x86_64 0:7.4p1-22.el7_9                                                                                                                                   
+
+Dependency Installed:
+  fipscheck.x86_64 0:1.4.1-6.el7         fipscheck-lib.x86_64 0:1.4.1-6.el7         openssh.x86_64 0:7.4p1-22.el7_9         tcp_wrappers-libs.x86_64 0:7.6-77.el7        
+
+Complete!
+[root@8e06432c4f99 /]# yum -y install openssh-clients
+........................................................................
+
+Installed:
+  openssh-clients.x86_64 0:7.4p1-22.el7_9                                                                                                                                  
+
+Dependency Installed:
+  libedit.x86_64 0:3.0-12.20121213cvs.el7                                                                                                                                  
+
+Complete!
+[root@8e06432c4f99 /]# vim /etc/ssh/sshd_config
+PubkeyAuthentication yes #启用公钥私钥配对认证方式
+AuthorizedKeysFile .ssh/authorized_keys #公钥文件路径（和上面生成的文件同）
+PermitRootLogin yes #root能使用ssh登录
+
+[root@8e06432c4f99 /]# yum install initscripts -y
+........................................................................
+
+Installed:
+  initscripts.x86_64 0:9.49.53-1.el7_9.1                                                                                                                                   
+
+Dependency Installed:
+  iproute.x86_64 0:4.11.0-30.el7         iptables.x86_64 0:1.4.21-35.el7              libmnl.x86_64 0:1.0.3-7.el7      libnetfilter_conntrack.x86_64 0:1.0.6-1.el7_3     
+  libnfnetlink.x86_64 0:1.0.1-4.el7      sysvinit-tools.x86_64 0:2.88-14.dsf.el7     
+
+Complete!
+[root@e9565293654e /]# service sshd restart
+Redirecting to /bin/systemctl restart sshd.service
+[root@e9565293654e /]# netstat -tunlp | grep 22
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      282/sshd            
+tcp6       0      0 :::22                   :::*                    LISTEN      282/sshd 
+```
+
+- 测试SSH连接
+
+```shell
+# 如果不知道密码，可以先登录容器修改密码
+[root@e9565293654e /]# passwd		
+Changing password for user root.
+New password: 
+BAD PASSWORD: The password fails the dictionary check - it is based on a dictionary word
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+# 测试SSH连接
+[root@VM-12-2-centos ~]# ssh -p 442 root@127.0.0.1
+root@127.0.0.1's password: 
+Last login: Fri May  6 08:52:01 2022 from gateway
+[root@e9565293654e ~]# 
+[root@e9565293654e ~]# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.17.0.5  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:ac:11:00:05  txqueuelen 0  (Ethernet)
+        RX packets 4151  bytes 47039835 (44.8 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 3205  bytes 232794 (227.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+- 将容器打包保存为镜像
+
+```shell
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                                                                      NAMES
+e9565293654e   centos:7    "/usr/sbin/init"         8 minutes ago    Up 8 minutes    0.0.0.0:442->22/tcp, :::442->22/tcp                                        my-centos
+ce5f7383ae2a   nginx       "/docker-entrypoint.…"   49 minutes ago   Up 49 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7   "docker-entrypoint.s…"   54 minutes ago   Up 54 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis       "docker-entrypoint.s…"   8 days ago       Up 8 days       0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker commit my-centos my-centos-img
+sha256:a2812fd8436b6777857d69bb74934c01b19a803d8d4ec9c31a967cf3881d2f8a
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+my-centos-img   latest    a2812fd8436b   3 seconds ago   435MB
+hello-world-x   latest    5aa5faee7296   9 days ago      13.3kB
+redis           latest    3c3da61c4be0   2 weeks ago     113MB
+nginx           latest    fa5269854a5e   2 weeks ago     142MB
+mysql           5.7       82d2d47667cf   2 weeks ago     450MB
+hello-world     latest    feb5d9fea6a5   7 months ago    13.3kB
+centos          7         eeb6ee3f44bd   7 months ago    204MB
+tomcat          7         9dfd74e6bc2f   10 months ago   533MB
+redis           6.0.8     16ecd2772934   18 months ago   104MB
+```
+
+- 通过镜像一键启动容器
+
+```shell
+# 删除之前的容器
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                                                                      NAMES
+e9565293654e   centos:7    "/usr/sbin/init"         9 minutes ago    Up 9 minutes    0.0.0.0:442->22/tcp, :::442->22/tcp                                        my-centos
+ce5f7383ae2a   nginx       "/docker-entrypoint.…"   50 minutes ago   Up 50 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7   "docker-entrypoint.s…"   56 minutes ago   Up 56 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis       "docker-entrypoint.s…"   8 days ago       Up 8 days       0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+[root@VM-12-2-centos ~]# docker stop e9565293654e
+e9565293654e
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker rm e9565293654e
+e9565293654e
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                                                                      NAMES
+ce5f7383ae2a   nginx       "/docker-entrypoint.…"   51 minutes ago   Up 51 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7   "docker-entrypoint.s…"   56 minutes ago   Up 56 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis       "docker-entrypoint.s…"   8 days ago       Up 8 days       0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+# 根据刚才的镜像一键创建容器
+[root@VM-12-2-centos ~]# docker run --name=my-centos -tdi --privileged=true -p 442:22 my-centos-img
+9bc7eadb3e124b66df34431fffb2a8e1e3c3c715257c8dc3ce003688483807ab
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS          PORTS                                                                      NAMES
+9bc7eadb3e12   my-centos-img   "/usr/sbin/init"         3 seconds ago    Up 2 seconds    0.0.0.0:442->22/tcp, :::442->22/tcp                                        my-centos
+ce5f7383ae2a   nginx           "/docker-entrypoint.…"   52 minutes ago   Up 52 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   57 minutes ago   Up 57 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis           "docker-entrypoint.s…"   8 days ago       Up 8 days       0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+# 测试SSH连接，密码为刚才容器里修改的密码
+[root@VM-12-2-centos ~]# ssh -p 442 root@127.0.0.1
+root@127.0.0.1's password: 
+Last login: Fri May  6 08:52:33 2022 from gateway
+[root@9bc7eadb3e12 ~]# 
+[root@9bc7eadb3e12 ~]# exit
+logout
+Connection to 127.0.0.1 closed.
+```
+
+### 5.2 制作Jdk环境镜像
+
+项目部署时，Jdk基本是必备的，因此基于刚才的CentOS镜像，再制作一个Java部署环境镜像。
+
+- 基于刚才的CentOS镜像创建容器
+
+```shell
+[root@VM-12-2-centos ~]# docker run --name=my-centos -tdi --privileged=true -p 442:22 my-centos-img
+9bc7eadb3e124b66df34431fffb2a8e1e3c3c715257c8dc3ce003688483807ab
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS          PORTS                                                                      NAMES
+9bc7eadb3e12   my-centos-img   "/usr/sbin/init"         3 seconds ago    Up 2 seconds    0.0.0.0:442->22/tcp, :::442->22/tcp                                        my-centos
+ce5f7383ae2a   nginx           "/docker-entrypoint.…"   52 minutes ago   Up 52 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   57 minutes ago   Up 57 minutes   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis           "docker-entrypoint.s…"   8 days ago       Up 8 days       0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+
+```
+
+- 安装Jdk
+
+```shell
+[root@VM-12-2-centos lzx]# docker cp /home/lzx/jdk1.8.0_181.tar.gz 9bc7eadb3e12:/opt/
+[root@VM-12-2-centos ~]# docker exec -it 9bc7eadb3e12 /bin/bash
+[root@9bc7eadb3e12 /]# ls /opt/
+jdk1.8.0_181.tar.gz
+```
 
 
 
 
 
-### 5.2 指定Jdk环境镜像
 
 
 
-
-
-### 5.3 制作Java部署环境镜像
 
 
 
@@ -1016,11 +1422,45 @@ root                4391                1966                0                   
 
 
 
-# 七：Docker私服
 
 
 
-# 八：Docker运维
+
+# 七：Docker数据卷
+
+
+
+
+
+
+
+# 八：Docker网络
+
+
+
+
+
+
+
+# 九：Docker资源隔离
+
+
+
+
+
+
+
+# 十：Docker运维
+
+### 10.1 Docker私服
+
+
+
+
+
+### 10.2 Docker可视化工具
+
+
 
 
 

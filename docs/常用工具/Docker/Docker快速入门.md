@@ -1404,19 +1404,60 @@ f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   57 minutes ago   Up 57
 [root@VM-12-2-centos ~]# docker exec -it 9bc7eadb3e12 /bin/bash
 [root@9bc7eadb3e12 /]# ls /opt/
 jdk1.8.0_181.tar.gz
+[root@9bc7eadb3e12 opt]# tar -xvf jdk1.8.0_181.tar.gz
+..........................................
+[root@9bc7eadb3e12 opt]# ls
+jdk1.8.0_181  jdk1.8.0_181.tar.gz
 ```
 
+- 声明环境变量
 
+```shell
+[root@9bc7eadb3e12 opt]# vim /etc/profile
 
+export JAVA_HOME=/opt/jdk1.8.0_181
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH
+export JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin
+export PATH=$PATH:${JAVA_PATH}
 
+[root@9bc7eadb3e12 opt]# 
+[root@9bc7eadb3e12 opt]# 
+[root@9bc7eadb3e12 opt]# source /etc/profile
+[root@9bc7eadb3e12 opt]# 
+[root@9bc7eadb3e12 opt]# java -version
+java version "1.8.0_181"
+Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
+```
 
+- 将容器打包为新的镜像
 
-
-
-
-
-
-
+```shell
+[root@VM-12-2-centos lzx]# docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED       STATUS       PORTS                                                                      NAMES
+9bc7eadb3e12   my-centos-img   "/usr/sbin/init"         4 hours ago   Up 4 hours   0.0.0.0:442->22/tcp, :::442->22/tcp                                        my-centos
+ce5f7383ae2a   nginx           "/docker-entrypoint.…"   4 hours ago   Up 4 hours   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   5 hours ago   Up 5 hours   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis           "docker-entrypoint.s…"   9 days ago    Up 9 days    0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# docker commit my-centos my-jdk8-img
+sha256:4eae70b95876f8790b1a9ef220b33da5b75f323f6578a9372cb073c2b4a20327
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+my-jdk8-img     latest    4eae70b95876   5 seconds ago   1.2GB
+my-centos-img   latest    a2812fd8436b   4 hours ago     435MB
+hello-world-x   latest    5aa5faee7296   9 days ago      13.3kB
+redis           latest    3c3da61c4be0   2 weeks ago     113MB
+nginx           latest    fa5269854a5e   2 weeks ago     142MB
+mysql           5.7       82d2d47667cf   2 weeks ago     450MB
+hello-world     latest    feb5d9fea6a5   7 months ago    13.3kB
+centos          7         eeb6ee3f44bd   7 months ago    204MB
+tomcat          7         9dfd74e6bc2f   10 months ago   533MB
+redis           6.0.8     16ecd2772934   18 months ago   104MB
+```
 
 # 六：Dockerfile
 

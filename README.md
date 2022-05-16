@@ -35,6 +35,7 @@
 
 - [x] [Linux](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Linux.md)
 - [ ] [HTTP](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/HTTP.md)
+- [ ] [JavaEE规范](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/JavaEE规范.md)
 - [ ] [JDBC](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/JDBC.md)
 - [ ] [Servlet](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Servlet.md)
 - [ ] [Tomcat](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/Tomcat.md)

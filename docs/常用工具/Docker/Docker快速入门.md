@@ -944,6 +944,31 @@ root                4391                1966                0                   
 2022-04-27T09:09:26.624628866Z 1:M 27 Apr 2022 09:09:26.623 * Ready to accept connections
 ```
 
+- 查看容器状态
+
+```shell
+# 查看所有容器状态，每秒刷新一次，按C可现实Docker容器名称
+[root@VM-12-2-centos ~]# docker stats
+
+CONTAINER ID   NAME           CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O         PIDS
+c1c5465d6109   tomcat         0.05%     88.14MiB / 3.7GiB   2.33%     104kB / 105kB    2.46MB / 0B       28
+886df6dbc34d   registry-web   0.00%     1.969MiB / 3.7GiB   0.05%     317kB / 4MB      0B / 41kB         3
+43583ad57e36   registry       0.00%     15.45MiB / 3.7GiB   0.41%     532MB / 1.09MB   10.1MB / 70.9MB   7
+
+CONTAINER ID   NAME           CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O         PIDS
+c1c5465d6109   tomcat         0.05%     88.14MiB / 3.7GiB   2.33%     104kB / 105kB    2.46MB / 0B       28
+886df6dbc34d   registry-web   0.00%     1.969MiB / 3.7GiB   0.05%     317kB / 4MB      0B / 41kB         3
+43583ad57e36   registry       0.00%     15.45MiB / 3.7GiB   0.41%     532MB / 1.09MB   10.1MB / 70.9MB   7
+# 查看某个容器的状态，每秒刷新一次
+[root@VM-12-2-centos ~]# docker stats c1c5465d6109
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O         BLOCK I/O     PIDS
+c1c5465d6109   tomcat    0.00%     88.14MiB / 3.7GiB   2.33%     104kB / 105kB   2.46MB / 0B   28
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O         BLOCK I/O     PIDS
+c1c5465d6109   tomcat    0.00%     88.14MiB / 3.7GiB   2.33%     104kB / 105kB   2.46MB / 0B   28
+```
+
 # 四：Docker应用
 
 ### 4.1 Docker部署Mysql
@@ -1101,22 +1126,46 @@ f01f507bcef1   mysql:5.7   "docker-entrypoint.s…"   5 minutes ago   Up 5 minut
 - 拉取镜像
 
 ```shell
-
+[root@VM-12-2-centos ~]# docker pull tomcat:9
+9: Pulling from library/tomcat
+67e8aa6c8bbc: Pull complete 
+627e6c1e1055: Pull complete 
+0670968926f6: Pull complete 
+5a8b0e20be4b: Pull complete 
+7a93fb438607: Pull complete 
+400f1e54bef0: Pull complete 
+f0b65b53f1a4: Pull complete 
+dc9d1a029c69: Pull complete 
+25dbf9415d2d: Pull complete 
+28cdc7690cfc: Pull complete 
+Digest: sha256:3593fef10852f51c1243c4e275ea6acba1441413271a04b6047da19259458b24
+Status: Downloaded newer image for tomcat:9
+docker.io/library/tomcat:9
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+tomcat                       9         5e9a4d049871   2 days ago      680MB
+my-jdk8-img                  latest    4eae70b95876   7 days ago      1.2GB
+my-centos-img                latest    a2812fd8436b   8 days ago      435MB
+hello-world-x                latest    5aa5faee7296   2 weeks ago     13.3kB
+redis                        latest    3c3da61c4be0   3 weeks ago     113MB
+nginx                        latest    fa5269854a5e   3 weeks ago     142MB
+mysql                        5.7       82d2d47667cf   3 weeks ago     450MB
+hello-world                  latest    feb5d9fea6a5   7 months ago    13.3kB
+centos                       7         eeb6ee3f44bd   8 months ago    204MB
+tomcat                       7         9dfd74e6bc2f   10 months ago   533MB
+redis                        6.0.8     16ecd2772934   18 months ago   104MB
 ```
 
 - 创建容器
 
 ```shell
-
+[root@VM-12-2-centos ~]# docker run -di --name=tomcat -p 443:8080 tomcat:9
+84e7a5b30a18747d64f6922470ccaa0a510b067624a068150ba96db1104c1a69
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE                      COMMAND                  CREATED             STATUS          PORTS                                       NAMES
+84e7a5b30a18   tomcat:9                   "catalina.sh run"        3 seconds ago       Up 3 seconds    0.0.0.0:443->8080/tcp, :::443->8080/tcp     tomcat
 ```
-
-- 访问测试
-
-
-
-
-
-
 
 # 五：镜像制作
 
@@ -1193,7 +1242,7 @@ Complete!
 - 安装net-tools
 
 ```shell
-[root@8e06432c4f99 /]# yum -y install net-tools
+    [root@8e06432c4f99 /]# yum -y install net-tools
 Loaded plugins: fastestmirror, ovl
 Loading mirror speeds from cached hostfile
  * base: mirrors.nju.edu.cn
@@ -1485,23 +1534,455 @@ redis           6.0.8     16ecd2772934   18 months ago   104MB
 
 # 九：Docker资源隔离
 
+### 9.1 Docker资源隔离介绍
 
+Docker除了支持应用级别环境恢复外，还支持资源的限制与隔离。
 
+Docker是通过内核的 `cgroups` 来做容器的资源限制，包括`CPU、内存、磁盘`三大方面。
 
+注：cgroups是Linux的另外一个强大的内核工具，有了cgroups，不仅可以限制被namespace隔离起来的资源，还可以为资源设置权重、计算使用量、操控任务启停等。说白了就是：cgroups可以限制、记录任务组所使用的物理资源（包括CPU，Memory，IO等），是构建Docker等一系列虚拟化管理工具的基石。
 
+### 9.2 内存限制
 
+Docker 提供的内存限制功能有以下几点：
+
+- 容器能使用的内存和交换分区大小
+- 容器的核心内存大小
+- 容器虚拟内存的交换行为
+- 容器内存的软性限制
+- 是否杀死占用过多内存的容器
+- 容器被杀死的优先级
+
+容器内存相关配置参数如下：
+
+| 选项                 | 描述                                                       |
+| -------------------- | ---------------------------------------------------------- |
+| -m，--memory         | 内存限制，格式是数字加单位，单位可选b、k、m、g，最小为4M   |
+| --memory-swap        | 内存+交换分区大小总限制，格式如上，必须大于-m参数          |
+| --memory-reservation | 内存的软性限制，格式如上                                   |
+| --oom-kill-disable   | 是否阻止OOM killer 杀死容器，默认不会                      |
+| --oom-score-adj      | 容器被OOM killer 杀死的优先级，范围为[-1000,1000]，默认为0 |
+| --memory-swappines   | 用于设置容器的虚拟内存控制行为，值为0-100之间              |
+| --kernel-memory      | 核心内存限制，格式同上，最小为4M                           |
+
+```shell
+# 开启一个容器，不做内存限制
+[root@VM-12-2-centos ~]# docker run -di --name centos1 centos:7
+5a23dbbf3fbd545a032ea6932b274c35153a9066b0323dce20d7eaf4b0c889f1
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND       CREATED         STATUS         PORTS     NAMES
+5a23dbbf3fbd   centos:7   "/bin/bash"   5 seconds ago   Up 4 seconds             centos1
+# 开启一个容器，内存限制为500M
+[root@VM-12-2-centos ~]# docker run -di -m 500M --name centos2 centos:7
+efd7239651f9db21cdebb0d839faf077a98bd8df49a2b70ae55b4e5216e40cfc
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND       CREATED          STATUS          PORTS     NAMES
+efd7239651f9   centos:7   "/bin/bash"   4 seconds ago    Up 4 seconds              centos2
+5a23dbbf3fbd   centos:7   "/bin/bash"   24 seconds ago   Up 24 seconds             centos1
+# 查看容器状态，不做限制时使用物理机所有内存
+[root@VM-12-2-centos ~]# docker stats
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+efd7239651f9   centos2   0.00%     192KiB / 500MiB     0.04%     656B / 0B   0B / 0B     1
+5a23dbbf3fbd   centos1   0.00%     188KiB / 3.7GiB     0.00%     656B / 0B   0B / 0B     1
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+efd7239651f9   centos2   0.00%     192KiB / 500MiB     0.04%     656B / 0B   0B / 0B     1
+5a23dbbf3fbd   centos1   0.00%     188KiB / 3.7GiB     0.00%     656B / 0B   0B / 0B     1
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+efd7239651f9   centos2   0.00%     192KiB / 500MiB     0.04%     656B / 0B   0B / 0B     1
+5a23dbbf3fbd   centos1   0.00%     188KiB / 3.7GiB     0.00%     656B / 0B   0B / 0B     1
+```
+
+### 9.3 CPU限制
+
+Docker对容器CPU的限制有以下几点：
+
+- 相对份额限制：多个容器竞争资源时根据比例获取
+- 绝对限制：容器在固定周期内只能使用多久的CPU
+- 绑定CPU核：给容器绑定某个或多个CPU核使用
+- 混合限制：给容器绑定CPU核心，在基于绑定的核心进行相对份额限制和绝对限制
+
+相关配置参数如下：
+
+| 选项               | 描述                                                         |
+| ------------------ | ------------------------------------------------------------ |
+| --cpuset-cpus=""   | 允许使用的CPU集，值可以为0-3、0、1                           |
+| --cpuset-mems=""   | 允许在上执行的内存节点（MEMs），只对NUMA系统有效             |
+| --cpus=0.5         | 通过cpus设置一个小数，来表示要使用的CPU的最大限制，这个小数的区间为0.01~[最大核心数] |
+| --cpu-quota=0      | 限制CPU CFS配额，必须不小于1ms，即>=1000                     |
+| --cpu-period=0     | 限制CPU CFS的周期，范围从100ms-1s，即[1000,1000000]          |
+| -c，--cpu-shares=0 | CPU共享权值，相对权重                                        |
+
+```shell
+# 开启一个容器，不做CPU限制
+[root@VM-12-2-centos ~]# docker run -di --name centos1 centos:7
+f60e692719e41c987d0a76c18e22d2b969964a0be683d291a1d45f2806281397
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND       CREATED         STATUS         PORTS     NAMES
+f60e692719e4   centos:7   "/bin/bash"   3 seconds ago   Up 2 seconds             centos1
+# 开启一个容器，限制只能使用0.5核
+[root@VM-12-2-centos ~]# docker run -di --cpus 0.5 --name centos2 centos:7
+851955f711693e3795e22c423f8ea6306943dd023f6365ae379237a9305110d5
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND       CREATED          STATUS          PORTS     NAMES
+851955f71169   centos:7   "/bin/bash"   1 second ago     Up 1 second               centos2
+f60e692719e4   centos:7   "/bin/bash"   34 seconds ago   Up 33 seconds             centos1
+# 编写测试脚本如下
+#!/bin/sh
+count=4
+for (( i=0; i<$count+1;i++ ))
+do
+	echo $i
+	dd if=/dev/zero of=/dev/null &    
+done
+# 进入容器centos1，执行脚本
+[root@VM-12-2-centos ~]# docker exec -it centos1 /bin/bash
+[root@f60e692719e4 /]# 
+[root@f60e692719e4 /]# vi cpu_test.sh
+[root@f60e692719e4 /]# 
+[root@f60e692719e4 /]# 
+[root@f60e692719e4 /]# /bin/bash cpu_test.sh 
+0
+1
+2
+3
+4
+[root@f60e692719e4 /]# exit
+# 查看容器CPU情况，物理机为2C4G，可以看到CPU已经全部耗尽
+[root@VM-12-2-centos ~]# docker stats
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+851955f71169   centos2   0.00%     188KiB / 3.7GiB     0.00%     656B / 0B   0B / 0B     1
+f60e692719e4   centos1   199.21%   708KiB / 3.7GiB     0.02%     656B / 0B   0B / 0B     6
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+851955f71169   centos2   0.00%     188KiB / 3.7GiB     0.00%     656B / 0B   0B / 0B     1
+f60e692719e4   centos1   199.21%   708KiB / 3.7GiB     0.02%     656B / 0B   0B / 0B     6
+# 停止容器centos1，开始测试centos2
+[root@VM-12-2-centos ~]# docker stop f60e692719e4
+f60e692719e4
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND       CREATED         STATUS         PORTS     NAMES
+851955f71169   centos:7   "/bin/bash"   3 minutes ago   Up 3 minutes             centos2
+[root@VM-12-2-centos ~]# docker exec -it centos2 /bin/bash
+[root@851955f71169 /]# vi cpu_test.sh
+[root@851955f71169 /]# 
+[root@851955f71169 /]# 
+[root@851955f71169 /]# /bin/bash cpu_test.sh 
+0
+1
+2
+3
+4
+[root@851955f71169 /]# exit
+exit
+# 查看此时容器CPU使用和物理机CPU使用
+[root@VM-12-2-centos ~]# docker stats
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+851955f71169   centos2   49.77%    712KiB / 3.7GiB     0.02%     656B / 0B   0B / 0B     6
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+851955f71169   centos2   49.77%    712KiB / 3.7GiB     0.02%     656B / 0B   0B / 0B     6
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O     BLOCK I/O   PIDS
+851955f71169   centos2   49.68%    712KiB / 3.7GiB     0.02%     656B / 0B   0B / 0B     6
+
+[root@VM-12-2-centos ~]# top
+top - 23:12:53 up 19 days, 13:20,  2 users,  load average: 0.86, 2.90, 3.32
+Tasks: 100 total,   6 running,  94 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  6.5 us, 19.0 sy,  0.0 ni, 74.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :  3880180 total,   694392 free,   310196 used,  2875592 buff/cache
+KiB Swap:        0 total,        0 free,        0 used.  3271516 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                               
+10839 root      20   0    4408    356    280 R  12.6  0.0   0:06.75 dd                                                                                                    
+10840 root      20   0    4408    356    280 R  12.3  0.0   0:08.11 dd                                                                                                    
+10838 root      20   0    4408    356    280 R   8.3  0.0   0:06.53 dd                                                                                                    
+10841 root      20   0    4408    352    280 R   8.3  0.0   0:05.88 dd                                                                                                    
+10842 root      20   0    4408    356    280 R   8.3  0.0   0:06.04 dd                                                                                                    
+ 1844 root      20   0 1029976  64572  14484 S   0.7  1.7 205:47.98 YDService                                                                                             
+    9 root      20   0       0      0      0 S   0.3  0.0   7:52.04 rcu_sched                                                                                             
+ 1237 root      20   0   24576   6552   3660 S   0.3  0.2  34:03.10 tat_agent  
+```
+
+### 9.4 磁盘限制
+
+容器对磁盘的限制主要支持以下参数：
+
+| 选项                | 描述                                               |
+| ------------------- | -------------------------------------------------- |
+| --device-read-bps   | 限制容器对某个磁盘的读速度，单位可以是kb、mb或者gb |
+| --device-read-iops  | 限制容器对某个磁盘每秒读的IO次数                   |
+| --device-write-bps  | 限制容器对某个磁盘的写速度                         |
+| --device-write-iops | 限制容器对某个磁盘每秒写的IO次数                   |
+| --blkio-weight      | 设置各个容器之间的相对权重，默认为500              |
+
+```shell
+# 创建容器centos1，不做任何限制
+[root@VM-12-2-centos ~]# docker run -di --name centos1 centos:7
+3957e0e3968c6703b8a59d099707aaa9594b1275dde12438aacc42dfa0d7d6a9
+# 创建容器centos2，限制/dev/vda的写入速度
+[root@VM-12-2-centos ~]# docker run -di --name centos2 --device-write-bps /dev/vda:50MB centos:7
+e87935e0be443348ca37e4df4de3eef46810c962674acaa5f0bcaaea99b12939
+# 进入容器centos1，测试写入速度
+[root@3957e0e3968c /]# time dd if=/dev/zero of=test.out bs=1M count=800 oflag=direct
+800+0 records in
+800+0 records out
+838860800 bytes (839 MB) copied, 6.15525 s, 136 MB/s
+
+real	0m6.157s
+user	0m0.001s
+sys	0m0.130s
+# 进入容器centos2，测试写入速度
+[root@ec084165fb0d /]# time dd if=/dev/zero of=test.out bs=1M count=800 oflag=direct
+800+0 records in
+800+0 records out
+838860800 bytes (839 MB) copied, 15.9585 s, 52.6 MB/s
+
+real	0m15.960s
+user	0m0.000s
+sys	0m0.137s
+```
 
 # 十：Docker运维
 
 ### 10.1 Docker私服
 
+- Docker私服介绍
 
+之前在拉取Docker镜像的时候，都是从Docker的官方仓库Docker Hub里拉取的，我们也可以将自己的镜像上传到官方仓库，但对于公司内部应用来说，需要搭建自己的私有化仓库，即Docker私服。两者之间的关系类似于GitHub和GitLab。
 
+- Docker私服搭建
 
+```shell
+# 拉取私服的镜像
+[root@VM-12-2-centos ~]# docker pull registry
+Using default tag: latest
+latest: Pulling from library/registry
+df9b9388f04a: Pull complete 
+52dc419b0ee2: Pull complete 
+b6846b9db566: Pull complete 
+b0a23bbf973d: Pull complete 
+c50f110701a7: Pull complete 
+Digest: sha256:dc3cdf6d35677b54288fe9f04c34f59e85463ea7510c2a9703195b63187a7487
+Status: Downloaded newer image for registry:latest
+docker.io/library/registry:latest
+# 搭建私服
+[root@VM-12-2-centos ~]# docker run -di --name=registry -p 5000:5000 registry
+43583ad57e3652b12393f04cdb6071b0607ae7b1829801d990a20381a254022e
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS         PORTS                                                                      NAMES
+43583ad57e36   registry        "/entrypoint.sh /etc…"   3 seconds ago   Up 2 seconds   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp                                  registry
+9bc7eadb3e12   my-centos-img   "/usr/sbin/init"         8 days ago      Up 8 days      0.0.0.0:442->22/tcp, :::442->22/tcp                                        my-centos
+ce5f7383ae2a   nginx           "/docker-entrypoint.…"   8 days ago      Up 8 days      0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   web-server
+f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   8 days ago      Up 8 days      0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp                       jolly_blackburn
+69e5ce02db61   redis           "docker-entrypoint.s…"   2 weeks ago     Up 2 weeks     0.0.0.0:6380->6379/tcp, :::6380->6379/tcp                                  redis-server
+[root@VM-12-2-centos ~]# 
+# 私服测试，调用/v2/_catalog接口返回仓库所有镜像
+[root@VM-12-2-centos ~]# curl http://127.0.0.1:5000/v2/_catalog
+{"repositories":[]}
+# 给本地Docker设置远程私服地址
+[root@VM-12-2-centos ~]# vim /etc/docker/daemon.json
+{"insecure-registries":["127.0.0.1:5000"]}
+[root@VM-12-2-centos ~]# cat /etc/docker/daemon.json
+{"insecure-registries":["127.0.0.1:5000"]}
+# 重启Docker
+[root@VM-12-2-centos ~]# systemctl restart  docker
+```
+
+- 上传镜像到Docker私服
+
+```shell
+# 启动私服：刚才重启Docker会关闭所有Docker容器
+[root@VM-12-2-centos ~]# docker ps -a
+CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS                            PORTS     NAMES
+43583ad57e36   registry        "/entrypoint.sh /etc…"   5 minutes ago   Exited (2) 2 minutes ago                    registry
+9bc7eadb3e12   my-centos-img   "/usr/sbin/init"         8 days ago      Exited (137) About a minute ago             my-centos
+e09d1c93c2d2   centos:7        "/bin/bash"              8 days ago      Created                                     optimistic_heisenberg
+ce5f7383ae2a   nginx           "/docker-entrypoint.…"   8 days ago      Exited (0) 2 minutes ago                    web-server
+f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   8 days ago      Exited (0) 2 minutes ago                    jolly_blackburn
+69e5ce02db61   redis           "docker-entrypoint.s…"   2 weeks ago     Exited (0) 2 minutes ago                    redis-server
+[root@VM-12-2-centos ~]# docker start registry
+registry
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE      COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+43583ad57e36   registry   "/entrypoint.sh /etc…"   6 minutes ago   Up 3 seconds   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp   registry
+# 上传镜像到私服
+# 给镜像打标签，标记为私有仓库镜像
+[root@VM-12-2-centos ~]# docker tag my-jdk8-img 127.0.0.1:5000/my-jdk8-img:v1
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+127.0.0.1:5000/my-jdk8-img   v1        4eae70b95876   7 days ago      1.2GB
+my-jdk8-img                  latest    4eae70b95876   7 days ago      1.2GB
+my-centos-img                latest    a2812fd8436b   8 days ago      435MB
+hello-world-x                latest    5aa5faee7296   2 weeks ago     13.3kB
+redis                        latest    3c3da61c4be0   3 weeks ago     113MB
+nginx                        latest    fa5269854a5e   3 weeks ago     142MB
+mysql                        5.7       82d2d47667cf   3 weeks ago     450MB
+registry                     latest    2e200967d166   5 weeks ago     24.2MB
+hello-world                  latest    feb5d9fea6a5   7 months ago    13.3kB
+centos                       7         eeb6ee3f44bd   8 months ago    204MB
+tomcat                       7         9dfd74e6bc2f   10 months ago   533MB
+redis                        6.0.8     16ecd2772934   18 months ago   104MB
+# 上传镜像到远程的私服
+[root@VM-12-2-centos ~]# docker push 127.0.0.1:5000/my-jdk8-img:v1
+The push refers to repository [127.0.0.1:5000/my-jdk8-img]
+ff0861fe9b39: Pushed 
+3028613ebb16: Pushed 
+174f56854903: Pushed 
+v1: digest: sha256:f9e3abe5ddbd0fa793e0387d2f195669431f2ccdf69cefdd9f97d70e7738d68c size: 954
+# 查看私服仓库所有镜像
+[root@VM-12-2-centos ~]#  curl http://127.0.0.1:5000/v2/_catalog
+{"repositories":["my-jdk8-img"]}
+```
+
+- 从Docker私服拉取镜像
+
+```shell
+# 删除本地镜像
+[root@VM-12-2-centos ~]# docker rmi 127.0.0.1:5000/my-jdk8-img:v1
+Untagged: 127.0.0.1:5000/my-jdk8-img:v1
+Untagged: 127.0.0.1:5000/my-jdk8-img@sha256:f9e3abe5ddbd0fa793e0387d2f195669431f2ccdf69cefdd9f97d70e7738d68c
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+tomcat          9         5e9a4d049871   2 days ago      680MB
+my-jdk8-img     latest    4eae70b95876   7 days ago      1.2GB
+my-centos-img   latest    a2812fd8436b   8 days ago      435MB
+hello-world-x   latest    5aa5faee7296   2 weeks ago     13.3kB
+redis           latest    3c3da61c4be0   3 weeks ago     113MB
+nginx           latest    fa5269854a5e   3 weeks ago     142MB
+mysql           5.7       82d2d47667cf   3 weeks ago     450MB
+registry        latest    2e200967d166   5 weeks ago     24.2MB
+hello-world     latest    feb5d9fea6a5   7 months ago    13.3kB
+centos          7         eeb6ee3f44bd   8 months ago    204MB
+tomcat          7         9dfd74e6bc2f   10 months ago   533MB
+redis           6.0.8     16ecd2772934   18 months ago   104MB
+# 私服拉取镜像
+[root@VM-12-2-centos ~]# docker pull 127.0.0.1:5000/my-jdk8-img
+Using default tag: latest
+Error response from daemon: manifest for 127.0.0.1:5000/my-jdk8-img:latest not found: manifest unknown: manifest unknown
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker pull 127.0.0.1:5000/my-jdk8-img:v1
+v1: Pulling from my-jdk8-img
+Digest: sha256:f9e3abe5ddbd0fa793e0387d2f195669431f2ccdf69cefdd9f97d70e7738d68c
+Status: Downloaded newer image for 127.0.0.1:5000/my-jdk8-img:v1
+127.0.0.1:5000/my-jdk8-img:v1
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+tomcat                       9         5e9a4d049871   2 days ago      680MB
+127.0.0.1:5000/my-jdk8-img   v1        4eae70b95876   7 days ago      1.2GB
+my-jdk8-img                  latest    4eae70b95876   7 days ago      1.2GB
+my-centos-img                latest    a2812fd8436b   8 days ago      435MB
+hello-world-x                latest    5aa5faee7296   2 weeks ago     13.3kB
+redis                        latest    3c3da61c4be0   3 weeks ago     113MB
+nginx                        latest    fa5269854a5e   3 weeks ago     142MB
+mysql                        5.7       82d2d47667cf   3 weeks ago     450MB
+registry                     latest    2e200967d166   5 weeks ago     24.2MB
+hello-world                  latest    feb5d9fea6a5   7 months ago    13.3kB
+centos                       7         eeb6ee3f44bd   8 months ago    204MB
+tomcat                       7         9dfd74e6bc2f   10 months ago   533MB
+redis                        6.0.8     16ecd2772934   18 months ago   104MB
+```
+
+- 私服可视化管理
+
+```shell
+# Docker提供了一个仓库可视化管理工具
+# 拉取镜像
+[root@VM-12-2-centos ~]# docker pull joxit/docker-registry-ui
+Using default tag: latest
+latest: Pulling from joxit/docker-registry-ui
+df9b9388f04a: Already exists 
+5867cba5fcbd: Pull complete 
+4b639e65cb3b: Pull complete 
+061ed9e2b976: Pull complete 
+bc19f3e8eeb1: Pull complete 
+4071be97c256: Pull complete 
+4f4fb700ef54: Pull complete 
+618e6efaf8a8: Pull complete 
+5afc3e5df415: Pull complete 
+a6368918034f: Pull complete 
+1ebab13c87a5: Pull complete 
+1b1a50956b80: Pull complete 
+Digest: sha256:96720e723ab66a1121df9117746eca21a7c965e77d1e74bc1ec696dccc7091d4
+Status: Downloaded newer image for joxit/docker-registry-ui:latest
+docker.io/joxit/docker-registry-ui:latest
+[root@VM-12-2-centos ~]# docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+tomcat                       9         5e9a4d049871   2 days ago      680MB
+joxit/docker-registry-ui     latest    5c76608cdfec   7 days ago      27.2MB
+my-jdk8-img                  latest    4eae70b95876   7 days ago      1.2GB
+127.0.0.1:5000/my-jdk8-img   v1        4eae70b95876   7 days ago      1.2GB
+my-centos-img                latest    a2812fd8436b   8 days ago      435MB
+hello-world-x                latest    5aa5faee7296   2 weeks ago     13.3kB
+redis                        latest    3c3da61c4be0   3 weeks ago     113MB
+nginx                        latest    fa5269854a5e   3 weeks ago     142MB
+mysql                        5.7       82d2d47667cf   3 weeks ago     450MB
+registry                     latest    2e200967d166   5 weeks ago     24.2MB
+hello-world                  latest    feb5d9fea6a5   7 months ago    13.3kB
+centos                       7         eeb6ee3f44bd   8 months ago    204MB
+tomcat                       7         9dfd74e6bc2f   10 months ago   533MB
+redis                        6.0.8     16ecd2772934   18 months ago   104MB
+# 启动UI服务
+[root@VM-12-2-centos ~]# docker run -p 80:80 --name registry-ui --link registry -e REGISTRY_URL="http://127.0.0.1:5000" -e DELETE_IMAGES="true" -e REGISTRY_TITLE="Registry" -d joxit/docker-registry-ui
+8dd39b4dd7af08e9d34f5da5e57686e0c4151809e66477715255648475810ab7
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+8dd39b4dd7af   joxit/docker-registry-ui   "/docker-entrypoint.…"   2 seconds ago    Up 2 seconds    0.0.0.0:80->80/tcp, :::80->80/tcp           registry-ui
+43583ad57e36   registry                   "/entrypoint.sh /etc…"   33 minutes ago   Up 27 minutes   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp   registry
+# 访问页面 ：http://124.222.146.210/
+```
 
 ### 10.2 Docker可视化工具
 
+当Docker容器和镜像比较多时，通过可视化工具进行管理会更为方便，Docker常用的可视化工具有：Portainer和Rancher。
 
+#### 10.2.1 Portainer搭建
 
+- 拉取镜像
 
+```shell
+[root@VM-12-2-centos ~]# docker pull portainer/portainer
+Using default tag: latest
+latest: Pulling from portainer/portainer
+772227786281: Pull complete 
+96fd13befc87: Pull complete 
+8b2d9b141e4d: Pull complete 
+Digest: sha256:25415d1143949e5dc0b03585365dc8bbe84f443ef116dc27719dc69f23ead35e
+Status: Downloaded newer image for portainer/portainer:latest
+docker.io/portainer/portainer:latest
+```
 
+- 创建容器
+
+```shell
+[root@VM-12-2-centos ~]#  docker run -d -p 443:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --privileged=true portainer/portainer
+3e23801787fd615a633ba67517ac870b16736805e0d8b65855563f09a61c7c00
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+3e23801787fd   portainer/portainer        "/portainer"             2 seconds ago    Up 1 second     0.0.0.0:443->9000/tcp, :::443->9000/tcp     wizardly_goldwasser
+886df6dbc34d   joxit/docker-registry-ui   "/docker-entrypoint.…"   10 minutes ago   Up 10 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp           registry-web
+43583ad57e36   registry                   "/entrypoint.sh /etc…"   49 minutes ago   Up 43 minutes   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp   registry
+```
+
+- 访问Portainer可视化页面：http://124.222.146.230:443
+
+安装完成后，Portainer会在443端口启动一个可视化管理界面，第一次访问需要设置密码，之后即可实现Docker可视化管理。
+
+![image-20220514202052316](http://rocks526.top/lzx/image-20220514202052316.png)
+
+Portainer可以管理多个Docker环境，可以选择本地或者远程的Docker环境进行连接，此处连接本地Docker，如下所示：
+
+![image-20220514202519028](http://rocks526.top/lzx/image-20220514202519028.png)
+
+每个Docker管理页面如下，可查看镜像、容器、网络、数据卷等信息，如下图所示：
+
+![image-20220514202630058](http://rocks526.top/lzx/image-20220514202630058.png)

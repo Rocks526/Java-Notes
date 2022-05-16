@@ -1,6 +1,9 @@
 ### JDBC
 
 - [x] [JDBC快速入门](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/连接池/JDBC快速入门.md)
+- [x] [JDBC接口设计](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/连接池/JDBC接口设计.md)
+- [x] [JDBC封装优化](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/连接池/JDBC封装优化.md)
+- [ ] [JDBC响应式](https://github.com/Rocks526/Java-Notes/blob/master/docs/web/连接池/JDBC响应式.md)
 
 ### DBCP
 

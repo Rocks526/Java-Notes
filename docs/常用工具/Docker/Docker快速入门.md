@@ -1510,11 +1510,138 @@ redis           6.0.8     16ecd2772934   18 months ago   104MB
 
 # 六：Dockerfile
 
+### 6.1 Dockerfile介绍
 
+Dockerfile是一个Docker镜像的描述文件，Dockerfile其内部包含了一条条的指令，每一条指令构建一层，因此每一条指令的内容，就是描述该层应当如何构建。
 
+简单来说，Dockerfile就是Docker容器的行为描述，用于`一键快速启动部署容器`。
 
+Dockerfile结构大致分为四个部分：
 
+- 基础镜像信息：FROM centos:7
+- 维护者信息：
+- 镜像操作指令：RUN yum insatll openssh-server -y
+- 容器启动时执行指令：CMD ["/bin/bash"]
 
+### 6.2 Dockerfile指令
+
+- 常用指令
+
+| 指令       | 说明                                                         | 语法                                                         |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| FROM       | 指定基础镜像                                                 | FROM centos:7                                                |
+| MAINTAINER | 指定维护者信息，可以没有                                     | MAINTAINER 维护者信息                                        |
+| RUN        | 编译镜像时运行的命令、脚本（docker build时运行）             | RUN <shell 命令> <br/>RUN ["<可执行文件或命令>","\<param1>","\<param2>",...] |
+| ADD        | 编译镜像时，复制文件到容器里，针对tar压缩包会自动解压        | ADD [--chown=\<user>:\<group>] <源路径1>...  <目标路径>      |
+| WORKDIR    | 设置RUN、CMD、COPY、ADD等命令执行的工作目录，类似于cd        | WORKDIR <工作目录路径>                                       |
+| VOLUME     | 设置匿名数据卷，在启动容器时忘记挂载数据卷，会自动挂载到匿名卷 | VOLUME ["<路径1>", "<路径2>"...]                             |
+| EXPOSE     | 设置容器守护端口，以方便使用者配置映射，在运行时使用随机端口映射时，会自动随机映射 EXPOSE 的端口 | EXPOSE <端口1> [<端口2>...]                                  |
+| CMD        | 设置容器启动后执行的命令（docker run时运行）                 | CMD <shell 命令> <br/>CMD ["<可执行文件或命令>","\<param1>","\<param2>",...] |
+
+- 其他指令
+
+| 指令        | 说明                                                         | 语法                                                         |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| COPY        | 编译镜像时，复制文件到容器里                                 | COPY [--chown=\<user>:\<group>] <源路径1>...  <目标路径>     |
+| ENV         | 设置容器的环境变量                                           | ENV \<key> \<value><br/>ENV \<key1>=\<value1> \<key2>=\<value2>... |
+| ENTRYPOINT  | 类似于 CMD 指令，但其不会被 docker run 的命令行参数指定的指令所覆盖，而且这些命令行参数会被当作参数送给 ENTRYPOINT 指令指定的程序（存在多个 ENTRYPOINT 指令，仅最后一个生效） | ENTRYPOINT <shell 命令> <br/>ENTRYPOINT ["<可执行文件或命令>","\<param1>","\<param2>",...] |
+| HEALTHCHECK | 设置容器健康检查的命令                                       | HEALTHCHECK [选项] CMD <命令>：设置检查容器健康状况的命令    |
+| ARG         | 设置编译镜像时加入的参数（与ENV类似，但只在构建容器时有效），构建命令 docker build 中可以用 --build-arg <参数名>=<值> 来覆盖 | ARG <参数名>[=<默认值>]                                      |
+
+### 6.4 Dockerfile构建Jdk环境
+
+在之前制作Jdk环境镜像时，是通过手动安装然后commit产生新的镜像实现的，下面通过Dockerfile实现一键安装：
+
+- dockerfile如下：
+
+```dockerfile
+# 拉取基础镜像
+FROM centos:7
+# 声明维护者
+MAINTAINER lizhaoxuan
+# 安装基础工具包
+RUN yum -y install vim net-tools openssh-server openssh-clients initscripts
+# 修改ssh配置
+RUN sed -i '$aPubkeyAuthentication yes\nPermitRootLogin yes' /etc/ssh/sshd_config
+# 定义默认密码，可构建时修改
+ARG pwd=root@1234
+# 修改密码
+RUN echo "root:"${pwd} | chpasswd
+# 创建Jdk目录
+RUN mkdir -p /home/java/
+# 拷贝Jdk安装包
+ADD jdk1.8.0_181.tar.gz /home/java/
+# 添加环境变量
+RUN sed -i '$aexport JAVA_HOME=/home/java/jdk1.8.0_181\nexport JRE_HOME=${JAVA_HOME}/jre\nexport CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH\nexport JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin\nexport PATH=$PATH:${JAVA_PATH}' /etc/profile
+# 让环境变量生效
+RUN source /etc/profile
+# 容器启动后再启动ssh服务（容器启动时需要指定--privileged=true，-t，/usr/sbin/init）
+CMD service sshd start
+```
+
+- 构建镜像
+
+```shell
+[root@VM-12-2-centos lzx]# docker build -f /home/lzx/jdk8-dockerfile -t jdk8-dockerfile-img:v1 --build-arg pwd=root@123 .
+Sending build context to Docker daemon  767.1MB
+Step 1/11 : FROM centos:7
+ ---> eeb6ee3f44bd
+Step 2/11 : MAINTAINER lizhaoxuan
+ ---> Using cache
+ ---> 175947f11654
+Step 3/11 : RUN yum -y install vim net-tools openssh-server openssh-clients initscripts
+ ---> Using cache
+ ---> 21d1c4f0e040
+Step 4/11 : RUN sed -i '$aPubkeyAuthentication yes\nPermitRootLogin yes' /etc/ssh/sshd_config
+ ---> Using cache
+ ---> 2ebd0492321f
+Step 5/11 : ARG pwd=root@1234
+ ---> Using cache
+ ---> 5df2f96b3cc5
+Step 6/11 : RUN echo "root:"${pwd} | chpasswd
+ ---> Using cache
+ ---> 215c88117fca
+Step 7/11 : RUN mkdir -p /home/java/
+ ---> Using cache
+ ---> 5c1b2c809d82
+Step 8/11 : ADD jdk1.8.0_181.tar.gz /home/java/
+ ---> 58976b2bfe2c
+Step 9/11 : RUN sed -i '$aexport JAVA_HOME=/home/java/jdk1.8.0_181\nexport JRE_HOME=${JAVA_HOME}/jre\nexport CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH\nexport JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin\nexport PATH=$PATH:${JAVA_PATH}' /etc/profile
+ ---> Running in 84a065fc5867
+Removing intermediate container 84a065fc5867
+ ---> 385d2fa21d28
+Step 10/11 : RUN source /etc/profile
+ ---> Running in be100d0db181
+Removing intermediate container be100d0db181
+ ---> d2653899eb19
+Step 11/11 : CMD service sshd start
+ ---> Running in 96d36bfde0bf
+Removing intermediate container 96d36bfde0bf
+ ---> ee59d98fb817
+Successfully built ee59d98fb817
+Successfully tagged jdk8-dockerfile-img:v1
+# 查看构建好的镜像
+[root@VM-12-2-centos lzx]# docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED          SIZE
+jdk8-dockerfile-img          v1        ee59d98fb817   15 seconds ago   817MB
+# 启动容器
+[root@VM-12-2-centos lzx]# docker run -tdi --name jdk8 --privileged=true -p 422:22 jdk8-dockerfile-img:v1 /usr/sbin/init
+a81702744333152ccce2b8cbe665e24276b27dda25f777b4b4a90af3dd88b597
+# ssh连接，测试Java环境
+[root@VM-12-2-centos lzx]# ssh -p 422 root@127.0.0.1
+The authenticity of host '[127.0.0.1]:422 ([127.0.0.1]:422)' can't be established.
+ECDSA key fingerprint is SHA256:QmIdYZEey7OmgqH/DVCoOpcLgc4wQp5SOqPHOCw4Qjk.
+ECDSA key fingerprint is MD5:be:c3:d4:93:c8:e6:4a:b8:f5:6e:d9:cb:d5:cb:2e:8e.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[127.0.0.1]:422' (ECDSA) to the list of known hosts.
+root@127.0.0.1's password: 
+[root@a81702744333 ~]# 
+[root@a81702744333 ~]# java -version
+java version "1.8.0_181"
+Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
+[root@a81702744333 ~]# 
+```
 
 # 七：Docker数据卷
 

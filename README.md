@@ -106,7 +106,7 @@
 - [x] [IDEA](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/IDEA.md)
 - [x] [Docker&Kubernetes](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Docker&Kubernetes.md)
 - [x] [JMeter](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/JMeter.md)
-- [ ] [Prometheus](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Prometheus.md)
+- [x] [Prometheus&Grafana](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用工具/Prometheus&Grafana.md)
 
 ## 其他
 

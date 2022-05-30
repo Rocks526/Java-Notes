@@ -20,7 +20,7 @@ Master 负责远程控制 Slave（负载机），分布式通常有多个 JMeter
 
 Slave 一般也叫负载机，主要是发起线程来访问 target 服务器；一般在 Slave 节点机上先启动代理 jar 包，控制机远程连接，负载机运行脚本后对 Master 回传数据；流程示意图如下：
 
-![图片3.png](https://s0.lgstatic.com/i/image/M00/8C/F6/CgqCHl_2gXGAX4J2AAB_Vvcgr6E022.png)
+![图片3.png](http://rocks526.top/lzx/CgqCHl_2gXGAX4J2AAB_Vvcgr6E022.png)
 
 JMeter 的 Master 和 Slave 配置也比较简单，将 JMeter 的 bin 目录下的 jmeter.properties 文件配置：IP 和 Port 是 Slave 机的 IP 以及默认的 1099 端口；如下所示：
 

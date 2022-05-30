@@ -45,7 +45,7 @@ bin目录下的`jmeter.properties`是JMeter的全局配置文件，修改内容�
 language=zh_CN  
 ```
 
-### 1.3.2 Linux安装JMeter
+#### 1.3.2 Linux安装JMeter
 
 - 上传安装包并解压
 

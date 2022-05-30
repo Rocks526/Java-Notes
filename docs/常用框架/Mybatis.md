@@ -20,9 +20,9 @@
 
 - [ ] [SpringBoot集成](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/10-SpringBoot集成.md)
 
-# 二：Mybatis原理
+# 二：Mybatis源码分析
 
-- [ ] [核心工具包](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/11-核心工具包.md)
+- [ ] [Mybatis架构设计](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/11-Mybatis架构设计.md)
 
 - [ ] [源码环境搭建](https://github.com/Rocks526/Java-Notes/blob/master/docs/常用框架/Mybatis/11-源码环境搭建.md)
 

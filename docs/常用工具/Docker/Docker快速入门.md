@@ -1645,19 +1645,545 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
 
 # 七：Docker数据卷
 
+### 7.1 Docker数据卷介绍
 
+Docker容器在删除时，容器相关的Namespaces都会被删除，包括容器里的数据。为了实现数据的持久化和备份，Docker容器提供了数据卷技术：`通过目录的挂载，将容器内的目录挂载在宿主机上面`，数据卷技术有以下优点：
 
+- 数据保存备份：删除容器，容器挂载到本地的目录和数据不会删除；
 
+- 数据同步：修改挂载在本地的文件，数据会自动同步到容器内；
 
+- 数据共享：多个容器可以将目录挂载到宿主机的同一个目录，容器内产生数据，数据就会同步到本地，然后传递到其他容器；
 
+Docker的数据卷技术分为三类：
+
+- Volume：普通数据卷，映射到宿主机的/var/lib/docekr/volumes目录下
+- bind mounts：绑定数据卷，映射到宿主机指定路径下
+
+### 7.2 Volume
+
+- 创建数据卷
+
+```shell
+[root@VM-12-2-centos ~]# docker volume create  my-volume-for-nginx
+my-volume-for-nginx
+```
+
+- 查看创建的数据卷
+
+```shell
+[root@VM-12-2-centos ~]# docker volume ls
+DRIVER    VOLUME NAME
+local     my-volume-for-nginx
+```
+
+- 查看数据卷详情
+
+```shell
+[root@VM-12-2-centos ~]# docker volume inspect my-volume-for-nginx
+[
+    {
+        "CreatedAt": "2022-05-26T13:47:07+08:00",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/my-volume-for-nginx/_data",
+        "Name": "my-volume-for-nginx",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+```
+
+注：可以看到此数据卷保存在宿主机的/var/lib/docker/volumes/my-volume-for-nginx/_data目录。
+
+- 容器挂载数据卷
+
+```shell
+# 启动容器，mount参数挂载数据卷，type是数据卷类型，source是数据卷名称，target是容器目录
+[root@VM-12-2-centos ~]# docker run -di --name=web-server --mount type=volume,source=my-volume-for-nginx,target=/usr/share/nginx/html nginx 
+b050d04c974008cf7bd4b8ae9a82b763fb7504d452b7d8c139dd70e6be05112c
+[root@VM-12-2-centos ~]# 
+[root@VM-12-2-centos ~]# docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS     NAMES
+b050d04c9740   nginx     "/docker-entrypoint.…"   3 seconds ago   Up 2 seconds   80/tcp    web-server
+# 查看容器挂载的数据卷信息
+[root@VM-12-2-centos ~]# docker inspect web-server | grep Mounts -A 10
+            "Mounts": [
+                {
+                    "Type": "volume",
+                    "Source": "my-volume-for-nginx",
+                    "Target": "/usr/local/share/nginx/html"
+                }
+            ],
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+--
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "my-volume-for-nginx",
+                "Source": "/var/lib/docker/volumes/my-volume-for-nginx/_data",  
+                "Destination": "/usr/local/share/nginx/html",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,			# 容器对挂载目录的读写权限，可以通过readonly参数设置只读
+                "Propagation": ""
+            }
+# 修改nginx主页
+[root@VM-12-2-centos _data]# cd /var/lib/docker/volumes/my-volume-for-nginx/_data
+[root@VM-12-2-centos _data]# ll
+total 8
+-rw-r--r-- 1 root root 497 Jan 25 23:03 50x.html
+-rw-r--r-- 1 root root 615 Jan 25 23:03 index.html
+[root@VM-12-2-centos _data]# echo "Hello world" > index.html
+[root@VM-12-2-centos _data]# 
+[root@VM-12-2-centos _data]# docker exec -it web-server curl 127.0.0.1:80
+Hello world
+# 删除容器，数据卷依旧存在
+[root@VM-12-2-centos _data]# docker stop web-server
+web-server
+[root@VM-12-2-centos _data]# docker rm web-server
+web-server
+[root@VM-12-2-centos _data]# docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+[root@VM-12-2-centos _data]# ll
+total 8
+-rw-r--r-- 1 root root 497 Jan 25 23:03 50x.html
+-rw-r--r-- 1 root root  12 May 27 12:02 index.html
+```
+
+设置只读权限：--mount type=volume,source=my-volume-for-nginx,target=/usr/local/share/nginx/html,readonly
+
+- 删除数据卷
+
+```shell
+[root@VM-12-2-centos lzx]# docker volume rm my-volume-for-nginx
+my-volume-for-nginx
+[root@VM-12-2-centos lzx]# docker volume ls
+DRIVER    VOLUME NAME
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# ll /var/lib/docker/volumes/
+total 32
+brw------- 1 root root 253, 1 May 14 19:34 backingFsBlockDev
+-rw------- 1 root root  65536 May 27 12:05 metadata.db
+```
+
+### 7.3 bind mounts
+
+```shell
+[root@VM-12-2-centos ~]# mkdir /opt/nginx
+[root@VM-12-2-centos ~]# 
+# 启动容器，并绑定数据卷
+[root@VM-12-2-centos ~]# docker run -itd --name=web-server --mount type=bind,source=/opt/nginx,target=/usr/share/nginx/html nginx
+dc7a192b71ccf9b5dfff8990f132387d2e1912ef288bb1cd264f485b5ae23906
+[root@VM-12-2-centos ~]# 
+# 查看绑定的数据卷信息
+[root@VM-12-2-centos ~]# docker inspect web-server | grep Mounts -A 10
+            "Mounts": [
+                {
+                    "Type": "bind",
+                    "Source": "/opt/nginx",
+                    "Target": "/usr/share/nginx/html"
+                }
+            ],
+# 查看容器绑定目录，可以看到里面原本的index.html和50x.html文件没有了
+[root@VM-12-2-centos ~]# docker exec -it web-server ls /usr/share/nginx/html
+[root@VM-12-2-centos ~]# 
+# 容器里添加文件
+[root@VM-12-2-centos ~]#  docker exec -it web-server /bin/bash
+root@dc7a192b71cc:/# echo "Hello,World" > /usr/share/nginx/html/index.html
+root@dc7a192b71cc:/# curl 127.0.0.1:80
+Hello,World
+# 检查宿主机目录
+[root@VM-12-2-centos ~]# ll /opt/nginx/
+total 4
+-rw-r--r-- 1 root root 12 May 27 13:44 index.html
+[root@VM-12-2-centos ~]# cat /opt/nginx/index.html 
+Hello,World
+```
+
+注：`Bind mounts挂载宿主机目录到一个容器中的非空目录，那么此容器中的非空目录中的文件会被隐藏`，容器访问这个目录时能够访问到的文件均来自于宿主机目录。这也是Bind mounts模式和Volumes模式最大的不同。
+
+注：上面容器启动时的挂载参数，可以简化为`-v /opt/nginx:/usr/share/nginx/html`。
 
 # 八：Docker网络
 
+### 8.1 Docker网络介绍
 
+大量的互联网应用服务包括多个服务组件，这往往需要多个容器之间通过网络通信进行相互配合。Docker默认的网络机制，会在`宿主机上初始化一个docker0网卡，针对宿主机和每个容器都分配不同的IP`，如下所示：
 
+```shell
+# 宿主机
+[root@VM-12-2-centos sbin]# ifconfig
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255 # IP为172.17.0.1
+        inet6 fe80::42:45ff:fe4d:5b36  prefixlen 64  scopeid 0x20<link>
+        ether 02:42:45:4d:5b:36  txqueuelen 0  (Ethernet)
+        RX packets 112817  bytes 17613325 (16.7 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 114124  bytes 865716227 (825.6 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.0.12.2  netmask 255.255.252.0  broadcast 10.0.15.255
+        inet6 fe80::5054:ff:fe97:ef97  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:97:ef:97  txqueuelen 1000  (Ethernet)
+        RX packets 11623953  bytes 3658366185 (3.4 GiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 10628290  bytes 1585812773 (1.4 GiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 65518  bytes 534348741 (509.5 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 65518  bytes 534348741 (509.5 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+  
+# 启动jar包，用于后续端口测试
+[root@VM-12-2-centos lzx]# nohup java -jar docker-1.0.0-SNAPSHOT.jar > docker-jar.log 2>&1 & 
+[1] 20026
+[root@VM-12-2-centos lzx]# tailf docker-jar.log 
+2022-05-22 23:27:02.198  INFO 20026 --- [           main] com.lizhaoxuan.docker.DockerApplication  : Starting DockerApplication on VM-12-2-centos with PID 20026 (/home/lzx/docker-1.0.0-SNAPSHOT.jar started by root in /home/lzx)
+2022-05-22 23:27:02.201  INFO 20026 --- [           main] com.lizhaoxuan.docker.DockerApplication  : No active profile set, falling back to default profiles: default
+2022-05-22 23:27:03.406  INFO 20026 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8088 (http)
+2022-05-22 23:27:03.419  INFO 20026 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-22 23:27:03.419  INFO 20026 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2022-05-22 23:27:03.485  INFO 20026 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-22 23:27:03.486  INFO 20026 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1160 ms
+2022-05-22 23:27:03.725  INFO 20026 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-05-22 23:27:03.960  INFO 20026 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8088 (http) with context path ''
+2022-05-22 23:27:03.978  INFO 20026 --- [           main] com.lizhaoxuan.docker.DockerApplication  : Started DockerApplication in 2.42 seconds (JVM running for 2.943)
+[root@VM-12-2-centos lzx]# curl 127.0.0.1:8088/
+hello docker!
+# 创建容器
+[root@VM-12-2-centos lzx]# docker run -di --name=demo1 my-jdk8-img
+22a8f7fe1922a420e4b37522b0b0da7fb1bde78fb07ce1e4340433b5f02f8e8d
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# docker exec -it demo1 ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.17.0.2  netmask 255.255.0.0  broadcast 172.17.255.255  # 容器IP为172.17.0.2
+        ether 02:42:ac:11:00:02  txqueuelen 0  (Ethernet)
+        RX packets 7  bytes 586 (586.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+# 测试容器访问宿主机
+[root@VM-12-2-centos lzx]# docker exec -it demo1 ping 172.17.0.1
+PING 172.17.0.1 (172.17.0.1) 56(84) bytes of data.
+64 bytes from 172.17.0.1: icmp_seq=1 ttl=64 time=0.073 ms
+64 bytes from 172.17.0.1: icmp_seq=2 ttl=64 time=0.048 ms
+64 bytes from 172.17.0.1: icmp_seq=3 ttl=64 time=0.059 ms
+^C
+--- 172.17.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2000ms
+rtt min/avg/max/mdev = 0.048/0.060/0.073/0.010 ms
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# docker exec -it demo1 curl 172.17.0.1:8088/
+hello docker!
+# 容器启动jar包，测试物理机访问容器
+[root@VM-12-2-centos lzx]# docker cp docker-1.0.0-SNAPSHOT.jar demo1:/home/
+[root@VM-12-2-centos lzx]# docker exec -it demo1  /bin/bash
+[root@9d981484be1e /]# cd /home/
+[root@9d981484be1e home]# source /etc/profile
+[root@9d981484be1e home]# nohup java -jar docker-1.0.0-SNAPSHOT.jar > docker-jar.log 2>&1 & 
+[1] 141
+[root@9d981484be1e home]# tailf docker-jar.log 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.7.RELEASE)
+
+2022-05-24 08:57:24.378  INFO 141 --- [           main] com.lizhaoxuan.docker.DockerApplication  : Starting DockerApplication on 9d981484be1e with PID 141 (/home/docker-1.0.0-SNAPSHOT.jar started by root in /home)
+2022-05-24 08:57:24.382  INFO 141 --- [           main] com.lizhaoxuan.docker.DockerApplication  : No active profile set, falling back to default profiles: default
+2022-05-24 08:57:26.067  INFO 141 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8088 (http)
+2022-05-24 08:57:26.111  INFO 141 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-24 08:57:26.111  INFO 141 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2022-05-24 08:57:26.246  INFO 141 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-24 08:57:26.246  INFO 141 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1675 ms
+2022-05-24 08:57:26.477  INFO 141 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-05-24 08:57:26.721  INFO 141 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8088 (http) with context path ''
+2022-05-24 08:57:26.732  INFO 141 --- [           main] com.lizhaoxuan.docker.DockerApplication  : Started DockerApplication in 3.126 seconds (JVM running for 4.791)
+# 物理机访问容器
+[root@VM-12-2-centos lzx]# ping 172.17.0.2
+PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.
+64 bytes from 172.17.0.2: icmp_seq=1 ttl=64 time=0.043 ms
+64 bytes from 172.17.0.2: icmp_seq=2 ttl=64 time=0.044 ms
+^C
+--- 172.17.0.2 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 999ms
+rtt min/avg/max/mdev = 0.043/0.043/0.044/0.006 ms
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# curl http://172.17.0.2:8088/
+hello docker!
+[root@VM-12-2-centos lzx]# ping demo1  # 指定根据IP访问，无法根据容器名称访问
+ping: demo1: Name or service not known
+```
+
+如上所示，Docker默认会为宿主机和所有容器分配一个IP，彼此之间可以通过IP相互访问，但无法通过容器名称访问。此种方式，最大的问题在于分配的IP不固定，`多个容器之间无法预先知道要访问的容器的IP`，例如SpringBoot服务要访问Redis容器，但无法预先知道Redis容器的IP，只能初始化完Redis容器后，手动修改SpringBoot容器里设置的Redis容器的IP，给大型系统的部署带来很大的麻烦。
+
+因此Docker提供了`映射容器端口到宿主主机`和`容器互联机制`来为容器提供网络服务。
+
+- 容器端口映射：将容器的内部端口映射到物理机的端口上
+- 容器互联机制：多个容器之间可以通过容器名称直接访问
+
+### 8.1 端口映射
+
+Docker支持在启动容器时，通过`-p`或`-P`参数进行端口映射；`-p`指定映射的容器端口和宿主机端口，`-P`将容器指定端口映射到宿主机随机端口；通过多个`-p`参数可以配置映射多个端口，示例如下：
+
+```shell
+# 启动容器，配置端口映射
+[root@VM-12-2-centos lzx]# docker run -di --name demo2 -p 8089:8088 my-jdk8-img
+cec88e20993c55e258c4c9d56ef078af4d1ee00fef3ef20d95c32d0a6f167db9
+# 容器里启动Jar包
+[root@VM-12-2-centos lzx]# docker cp docker-1.0.0-SNAPSHOT.jar demo2:/home/
+[root@VM-12-2-centos lzx]# docker exec -it demo2 /bin/bash
+[root@cec88e20993c /]# cd home/
+[root@cec88e20993c home]# source /etc/profile
+[root@cec88e20993c home]# nohup java -jar docker-1.0.0-SNAPSHOT.jar > docker-jar.log 2>&1 & 
+[1] 39
+[root@cec88e20993c home]# tailf docker-jar.log 
+2022-05-24 10:03:46.244  INFO 39 --- [           main] com.lizhaoxuan.docker.DockerApplication  : Starting DockerApplication on cec88e20993c with PID 39 (/home/docker-1.0.0-SNAPSHOT.jar started by root in /home)
+2022-05-24 10:03:46.253  INFO 39 --- [           main] com.lizhaoxuan.docker.DockerApplication  : No active profile set, falling back to default profiles: default
+2022-05-24 10:03:47.588  INFO 39 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8088 (http)
+2022-05-24 10:03:47.600  INFO 39 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-24 10:03:47.601  INFO 39 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2022-05-24 10:03:47.679  INFO 39 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-24 10:03:47.679  INFO 39 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1308 ms
+2022-05-24 10:03:47.904  INFO 39 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-05-24 10:03:48.127  INFO 39 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8088 (http) with context path ''
+2022-05-24 10:03:48.144  INFO 39 --- [           main] com.lizhaoxuan.docker.DockerApplication  : Started DockerApplication in 2.465 seconds (JVM running for 2.975)
+# 测试容器映射到宿主机的端口
+[root@VM-12-2-centos lzx]# curl http://127.0.0.1:8089/
+hello docker!
+# 启动容器，配置随机端口映射
+[root@VM-12-2-centos lzx]# docker run -di --name demo3 -P my-jdk8-img
+f9114cfd1ff5995d9563828be65faf4d6f3236f08e4b6dd19f856eb9fa873898
+[root@VM-12-2-centos lzx]# 
+# 由于my-jdk8-img镜像里只声明了22端口，因此容器的22端口随机映射到宿主机的49153
+[root@VM-12-2-centos lzx]# docker ps   
+CONTAINER ID   IMAGE         COMMAND            CREATED             STATUS             PORTS                                               NAMES
+f9114cfd1ff5   my-jdk8-img   "/usr/sbin/init"   3 seconds ago       Up 2 seconds       0.0.0.0:49153->22/tcp, :::49153->22/tcp             demo3
+cec88e20993c   my-jdk8-img   "/usr/sbin/init"   3 minutes ago       Up 3 minutes       22/tcp, 0.0.0.0:8089->8088/tcp, :::8089->8088/tcp   demo2
+9d981484be1e   my-jdk8-img   "/usr/sbin/init"   About an hour ago   Up About an hour   22/tcp                                              demo1
+# 测试随机映射端口
+[root@VM-12-2-centos lzx]# ssh -p 49153 root@127.0.0.1
+root@127.0.0.1's password: 
+Last failed login: Tue May 24 10:09:29 UTC 2022 from gateway on ssh:notty
+There was 1 failed login attempt since the last successful login.
+Last login: Fri May  6 08:58:16 2022 from gateway
+[root@336c6e540665 ~]# 
+```
+
+注：`-P`参数配置随机映射时，镜像里必须声明要暴露的端口。
+
+### 8.2 容器互联
+
+Docker支持在容器启动时，通过`--link`参数指定要连接的容器，多个容器之间可以通过容器名访问。
+
+- 制作dockerfile，用于一键启动
+
+```shell
+# 创建文件
+[root@VM-12-2-centos lzx]# vim springboot-dockerfile 
+# 拉取基础镜像
+FROM my-jdk8-img
+# 声明维护者
+MAINTAINER lizhaoxuan
+# 拷贝jar包
+COPY docker-1.0.0-SNAPSHOT.jar /home/
+# 创建Jdk目录
+RUN mkdir -p /home/java/
+# 拷贝Jdk安装包
+ADD jdk1.8.0_181.tar.gz /home/java/
+# 配置环境变量
+ENV JAVA_HOME=/home/java/jdk1.8.0_181
+ENV JRE_HOME=${JAVA_HOME}/jre
+ENV CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH
+ENV JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin
+ENV PATH=$PATH:${JAVA_PATH}
+# 容器启动后再启动jar包
+WORKDIR /home/
+CMD java -jar docker-1.0.0-SNAPSHOT.jar
+
+# 构建镜像
+[root@VM-12-2-centos lzx]# docker build -f /home/lzx/springboot-dockerfile -t springboot-img:v1 .
+Sending build context to Docker daemon  817.6MB
+Step 1/9 : FROM my-jdk8-img
+ ---> 4eae70b95876
+Step 2/9 : MAINTAINER lizhaoxuan
+ ---> Using cache
+ ---> 7faca34bddfe
+Step 3/9 : COPY docker-1.0.0-SNAPSHOT.jar /home/
+ ---> d5128fdaf6a8
+Step 4/9 : RUN mkdir -p /home/java/
+ ---> Running in 0701438aae4a
+Removing intermediate container 0701438aae4a
+ ---> 6831a0f6a210
+Step 5/9 : ADD jdk1.8.0_181.tar.gz /home/java/
+ ---> 92d3138841cb
+Step 6/9 : RUN sed -i '$aexport JAVA_HOME=/home/java/jdk1.8.0_181\nexport JRE_HOME=${JAVA_HOME}/jre\nexport CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH\nexport JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin\nexport PATH=$PATH:${JAVA_PATH}' /etc/profile
+ ---> Running in 28fe38dba122
+Removing intermediate container 28fe38dba122
+ ---> 231d1eea1ae9
+Step 7/9 : RUN source /etc/profile
+ ---> Running in 46b2657b25d5
+Removing intermediate container 46b2657b25d5
+ ---> f7d506189ade
+Step 8/9 : WORKDIR /home/
+ ---> Running in 71a72cf1b2b4
+Removing intermediate container 71a72cf1b2b4
+ ---> 63ce49c2729a
+Step 9/9 : CMD nohup java -jar docker-1.0.0-SNAPSHOT.jar > docker-jar.log 2>&1 &
+ ---> Running in 9ef10c1b2d02
+Removing intermediate container 9ef10c1b2d02
+ ---> da6041381d45
+Successfully built da6041381d45
+Successfully tagged springboot-img:v1
+```
+
+- 启动容器
+
+```shell
+[root@VM-12-2-centos lzx]# docker run -di --name=demo1 springboot-img:v1
+82fbcf207002923da0a27475bed5e6c5b9c5805166414a12f6cb9493d9516bab
+[root@VM-12-2-centos lzx]# docker run -di --name=demo2 --link demo1 springboot-img:v1
+f2c8092070dbfb73d02effc456cc4dada88fe2f357dc74cb00edaa96c01cbb91
+[root@VM-12-2-centos lzx]# 
+[root@VM-12-2-centos lzx]# docker ps
+CONTAINER ID   IMAGE               COMMAND                  CREATED              STATUS              PORTS     NAMES
+f2c8092070db   springboot-img:v1   "/bin/sh -c 'java -j…"   3 seconds ago        Up 2 seconds        22/tcp    demo2
+82fbcf207002   springboot-img:v1   "/bin/sh -c 'java -j…"   About a minute ago   Up About a minute   22/tcp    demo1
+# 连通性测试
+[root@VM-12-2-centos lzx]# docker exec -it demo1 ping demo2
+ping: demo2: Name or service not known
+[root@VM-12-2-centos lzx]# docker exec -it demo2 ping demo1
+PING demo1 (172.17.0.2) 56(84) bytes of data.
+64 bytes from demo1 (172.17.0.2): icmp_seq=1 ttl=64 time=0.077 ms
+64 bytes from demo1 (172.17.0.2): icmp_seq=2 ttl=64 time=0.049 ms
+64 bytes from demo1 (172.17.0.2): icmp_seq=3 ttl=64 time=0.047 ms
+^C
+--- demo1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 1999ms
+rtt min/avg/max/mdev = 0.047/0.057/0.077/0.016 ms
+[root@VM-12-2-centos lzx]# docker exec -it demo2 curl http://demo1:8088/
+hello docker!
+[root@VM-12-2-centos lzx]# docker exec -it demo1 curl http://demo2:8088/
+curl: (6) Could not resolve host: demo2; Unknown error
+```
+
+由此可见，`--link`参数是单向的，即当前启动的容器可以连接指向的容器，反过来不行。
+
+### 8.3 宿主机共享网络
+
+通过`端口映射`和`容器互联`机制，可以实现宿主机访问容器和容器之间相互访问。但还存在某种情况，需要容器访问宿主机，例如数据库部署在宿主机，而服务都通过容器启动的场景。
+
+针对这种场景，需要先介绍下Docker的网络模式：
+
+- host模式
+
+Docker使用了Linux的Namespaces技术来进行资源隔离，如PID Namespace隔离进程，Mount Namespace隔离文件系统，Network Namespace隔离网络等。⼀个Network Namespace提供了⼀份独立的网络环境，包括网卡、路由、Iptable规则等都与其他的Network Namespace隔离。⼀个Docker容器⼀般会分配⼀个独立的Network Namespace，但如果启动容器的时候使用host模式，那么这个容器将不会获得⼀个独立的Network Namespace，而是和宿主机共用⼀个Network Namespace。容器将不会虚拟出自己的网卡，配置自己的IP等，而是使用宿主机的IP和端口。
+
+Docker启动时通过`--net=host`指定此模式，可以看出，这个模式即可实现容器访问宿主机。
+
+- container模式
+
+这个模式指定创建的容器和已经存在的一个容器共享一个Network Namespace，而不是和宿主机共享。新创建的容器不回创建自己的网卡、配置自己的IP，而是和指定容器共享IP、端口范围等。同样，两个容器除了网络方面外，其他的如文件系统、进程列表是完全隔离的。
+
+Docker启动时通过`--net=container`指定此模式。
+
+- none模式
+
+这种模式下，容器拥有自己的Network Namespace，但并不为容器配置网络，也就是说这个容器没有网卡、IP、路由等，适合隔离的网络环境，不与外部交互的进程。
+
+Docker启动时通过`--net=none`指定此模式。
+
+- bridge模式
+
+此模式是Docker的默认模式，为每个容器分配Network Namespace，设置IP等，并将一个主机上的Docker容器连接到一个虚拟网桥上。
+
+```shell
+# host模式示例，容器访问宿主机的端口
+# 修改之前的dockerfile文件，将容器的springboot端口设置为9091，避免和宿主机冲突
+...........................................
+WORKDIR /home/
+CMD java -jar docker-1.0.0-SNAPSHOT.jar --server.port=9091
+# 构建镜像
+[root@VM-12-2-centos lzx]# docker build -f springboot-dockerfile -t springboot-img:v2 .
+Sending build context to Docker daemon  817.6MB
+Step 1/12 : FROM my-jdk8-img
+ ---> 4eae70b95876
+Step 2/12 : MAINTAINER lizhaoxuan
+ ---> Using cache
+ ---> 496f394030f8
+Step 3/12 : COPY docker-1.0.0-SNAPSHOT.jar /home/
+ ---> Using cache
+ ---> 628f47da9b4b
+Step 4/12 : RUN mkdir -p /home/java/
+ ---> Using cache
+ ---> d917db360c70
+Step 5/12 : ADD jdk1.8.0_181.tar.gz /home/java/
+ ---> Using cache
+ ---> 45ceaf27f74b
+Step 6/12 : ENV JAVA_HOME=/home/java/jdk1.8.0_181
+ ---> Using cache
+ ---> c2178bcef34a
+Step 7/12 : ENV JRE_HOME=${JAVA_HOME}/jre
+ ---> Using cache
+ ---> 3ea094f59b10
+Step 8/12 : ENV CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib:$CLASSPATH
+ ---> Using cache
+ ---> c4e23ac09b0c
+Step 9/12 : ENV JAVA_PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin
+ ---> Using cache
+ ---> 685b64e11aa5
+Step 10/12 : ENV PATH=$PATH:${JAVA_PATH}
+ ---> Using cache
+ ---> e6511fd0f1cc
+Step 11/12 : WORKDIR /home/
+ ---> Using cache
+ ---> 7adbfb7b0688
+Step 12/12 : CMD java -jar docker-1.0.0-SNAPSHOT.jar --server.port=9091
+ ---> Running in 2a3213ef440f
+Removing intermediate container 2a3213ef440f
+ ---> 4354c697256d
+Successfully built 4354c697256d
+Successfully tagged springboot-img:v2
+# 启动容器，配置host模式
+[root@VM-12-2-centos lzx]# docker run -di --name=demo1 --net=host springboot-img:v2
+2058aa722bd388d41e15fff47b2256d878ceec78e24b278b7c44289bfcf0d01e
+[root@VM-12-2-centos lzx]# docker ps
+CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS        PORTS     NAMES
+2058aa722bd3   springboot-img:v2   "/bin/sh -c 'java -j…"   2 seconds ago   Up 1 second             demo1
+# 测试容器和宿主机相互访问
+[root@VM-12-2-centos lzx]# netstat -tunlp | grep 9091
+tcp6       0      0 :::9091                 :::*                    LISTEN      30830/java          
+[root@VM-12-2-centos lzx]# netstat -tunlp | grep 8088
+tcp6       0      0 :::8088                 :::*                    LISTEN      20026/java   
+[root@VM-12-2-centos lzx]# ps -ef | grep docker
+root     20026     1  0 May22 ?        00:02:48 java -jar docker-1.0.0-SNAPSHOT.jar
+root     30830 30810 17 11:12 ?        00:00:05 java -jar docker-1.0.0-SNAPSHOT.jar --server.port=9091
+[root@VM-12-2-centos lzx]# curl http://127.0.0.1:9091
+hello docker!
+[root@VM-12-2-centos lzx]# docker exec -it demo1 curl http://127.0.0.1:8088/
+hello docker!
+```
 
 # 九：Docker资源隔离
 
@@ -1914,7 +2440,7 @@ f01f507bcef1   mysql:5.7       "docker-entrypoint.s…"   8 days ago      Up 8 d
 # 私服测试，调用/v2/_catalog接口返回仓库所有镜像
 [root@VM-12-2-centos ~]# curl http://127.0.0.1:5000/v2/_catalog
 {"repositories":[]}
-# 给本地Docker设置远程私服地址
+# Docker要求远程仓库都开启https访问，由于私服目前还未开启https，因此先配置docker信任此私服
 [root@VM-12-2-centos ~]# vim /etc/docker/daemon.json
 {"insecure-registries":["127.0.0.1:5000"]}
 [root@VM-12-2-centos ~]# cat /etc/docker/daemon.json
